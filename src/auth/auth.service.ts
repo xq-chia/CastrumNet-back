@@ -16,8 +16,6 @@ export class AuthService {
         const payload = { sub: user.userId, username: user.username }
         // TODO: Generate a JWT and return it here
         // instead of the user object
-        return {
-          access_token: await this.JwtService.signAsync(payload)
-        };
+        return await this.JwtService.signAsync(payload);
       }
 }

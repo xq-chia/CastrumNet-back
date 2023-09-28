@@ -8,7 +8,17 @@ export class AuthController {
 
     @HttpCode(HttpStatus.OK)
     @Post('login')
-    signIn(@Body() signInDto: SignInDto) {
-        return this.authService.signIn(signInDto.username, signInDto.password);
+    async signIn(@Body() signInDto: SignInDto) {
+        let res = {
+            msg: 'ok',
+            user: {
+                token: await this.authService.signIn(signInDto.username, signInDto.password),
+                name: signInDto.username,
+                email: `${signInDto.username}@mail.com`,
+                id: 1000,
+                time: new Date().getTime()
+            }
+        }
+        return res;
     }
 }
