@@ -17,7 +17,7 @@ export class AuthService {
         // TODO: Generate a JWT and return it here
         // instead of the user object
         return {
-          accss_token: await this.JwtService.signAsync(payload)
+          access_token: await this.JwtService.signAsync(payload)
         };
       }
 }
