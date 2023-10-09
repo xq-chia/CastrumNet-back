@@ -1,23 +1,37 @@
-import { Injectable } from '@nestjs/common';
-
-export type User = any;
+import { Inject, Injectable } from '@nestjs/common';
+import { User } from '../entity/user.entity';
+import * as mariadb from "mariadb";
+import { ConnectableObservable } from 'rxjs';
 
 @Injectable()
 export class UsersService {
-    private readonly users = [
-        {
-            userId: 1,
-            username: 'john',
-            password: 'changeme',
-        },
-        {
-            userId: 2,
-            username: 'maria',
-            password: 'guess',
-        },
-    ];
+  constructor(
+    @Inject('DATABASE_CONNECTION') private connection: mariadb.Connection
+  ) {}
 
-    async findOne(username: string): Promise<User | undefined> {
-        return this.users.find(user => user.username === username);
-    }
+  async findOneByUsername(username: string): Promise<User | undefined> {
+    let sql: string;
+    let user: User;
+    let sqlResult: any;
+
+    sql = 'SELECT * FROM user WHERE username = ?';
+
+    sqlResult = (await this.connection.query(sql, [username]))[0];
+    user = new User(sqlResult.userId, sqlResult.username, sqlResult.password, sqlResult.firstName, sqlResult.lastName, sqlResult.tenantId)
+
+    return user;
+  }
+
+  async findOneById(id: number): Promise<User | undefined> {
+    let sql: string;
+    let user: User;
+    let sqlResult: any;
+
+    sql = 'SELECT * FROM user WHERE userId = ?';
+
+    sqlResult = (await this.connection.query(sql, [id]))[0];
+    user = new User(sqlResult.userId, sqlResult.username, sqlResult.password, sqlResult.firstName, sqlResult.lastName, sqlResult.tenantId)
+
+    return user;
+  }
 }
