@@ -31,6 +31,17 @@ export class InitController {
         },
         menu: [
           {
+            text: 'User Management',
+            group: true,
+            hideInBreadcrumb: true,
+            children: [
+              {
+                text: 'User List',
+                link: '/user/list'
+              }
+            ]
+          },
+          {
             text: '主导航',
             i18n: 'menu.main',
             group: true,
