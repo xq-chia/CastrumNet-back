@@ -9,6 +9,20 @@ export class UsersService {
     @Inject('DATABASE_CONNECTION') private connection: mariadb.Connection
   ) {}
 
+  async save(user: User) {
+    let sql: string;
+    let sqlResult: any;
+
+    sql = 'INSERT INTO user VALUES (?, ?, ?, ?, ?, ?)';
+    sqlResult = await this.connection.query(sql, [user.userId, user.username, user.password, user.firstName, user.lastName, user.tenantId])
+
+    if (sqlResult.affectedRows == 1) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
   async findAll() {
     let sql: string;
     let users: User[] = [];
