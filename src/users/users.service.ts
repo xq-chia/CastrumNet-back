@@ -9,12 +9,26 @@ export class UsersService {
     @Inject('DATABASE_CONNECTION') private connection: mariadb.Connection
   ) {}
 
+  async updateStatus(userId: number) {
+    let sql: string;
+    let sqlResult: any;
+
+    sql = 'UPDATE user SET status = 0 WHERE userId = ?';
+    sqlResult = await this.connection.query(sql, [userId]);
+
+    if (sqlResult.affectedRows == 1) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
   async save(user: User) {
     let sql: string;
     let sqlResult: any;
 
     sql = 'INSERT INTO user VALUES (?, ?, ?, ?, ?, ?)';
-    sqlResult = await this.connection.query(sql, [user.userId, user.username, user.password, user.firstName, user.lastName, user.tenantId])
+    sqlResult = await this.connection.query(sql, [user.userId, user.username, user.password, user.firstName, user.lastName, user.tenantId, 1])
 
     if (sqlResult.affectedRows == 1) {
       return true;

@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post } from '@nestjs/common';
+import { Body, Controller, Get, Param, Patch, Post } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateDto } from 'src/dto/create-users.dto';
 import { User } from 'src/entity/user.entity';
@@ -19,5 +19,10 @@ export class UsersController {
         user = new User(createDto.userId, createDto.username, createDto.password, createDto.firstName, createDto.lastName, createDto.tenantId)
         
         return this.usersService.save(user);
+    }
+
+    @Patch('/:userId')
+    freeze(@Param('userId') userId: any) {
+        return this.usersService.updateStatus(userId);
     }
 }
