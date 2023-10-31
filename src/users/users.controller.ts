@@ -13,16 +13,16 @@ export class UsersController {
     }
 
     @Post()
-    create(@Body() createDto: CreateDto): Promise<boolean> {
+    async create(@Body() createDto: CreateDto): Promise<boolean> {
         let user: User;
 
         user = new User(createDto.userId, createDto.username, createDto.password, createDto.firstName, createDto.lastName, createDto.tenantId)
         
-        return this.usersService.save(user);
+        return await this.usersService.save(user);
     }
 
-    @Patch('/:userId')
-    freeze(@Param('userId') userId: any) {
-        return this.usersService.updateStatus(userId);
+    @Patch('freeze/:userId')
+    async freeze(@Param('userId') userId: any) {
+        return await this.usersService.updateStatus(userId);
     }
 }
