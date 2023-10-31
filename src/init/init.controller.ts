@@ -42,6 +42,17 @@ export class InitController {
             ]
           },
           {
+            text: 'Terminal',
+            group: true,
+            hideInBreadcrumb: true,
+            children: [
+              {
+                text: 'Terminal',
+                link: '/terminal/terminal'
+              }
+            ]
+          },
+          {
             text: '主导航',
             i18n: 'menu.main',
             group: true,
