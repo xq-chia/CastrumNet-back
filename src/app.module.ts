@@ -6,13 +6,15 @@ import { UsersModule } from './users/users.module';
 import { TenantsModule } from './tenants/tenants.module';
 import { InitController } from './init/init.controller';
 import { InitModule } from './init/init.module';
+import { CommandModule } from './command/command.module';
 
 @Module({
   imports: [
     AuthModule, 
     UsersModule, 
     TenantsModule, 
-    InitModule
+    InitModule, 
+    CommandModule,
   ],
   controllers: [AppController, InitController],
   providers: [AppService],
