@@ -4,9 +4,9 @@ import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
 import { TenantsModule } from './tenants/tenants.module';
-import { InitController } from './init/init.controller';
 import { InitModule } from './init/init.module';
 import { CommandModule } from './command/command.module';
+import { RbacModule } from './rbac/rbac.module';
 
 @Module({
   imports: [
@@ -14,9 +14,10 @@ import { CommandModule } from './command/command.module';
     UsersModule, 
     TenantsModule, 
     InitModule, 
-    CommandModule,
+    CommandModule, 
+    RbacModule,
   ],
-  controllers: [AppController, InitController],
+  controllers: [AppController],
   providers: [AppService],
 })
 export class AppModule {}
