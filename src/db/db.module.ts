@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
-import * as mariadb from 'mariadb';
+import { createPool } from 'mariadb';
 
-const pool = mariadb.createPool({
+const pool = createPool({
   host: 'localhost',
   user: 'fyp',
   password: 'xq010614chia',

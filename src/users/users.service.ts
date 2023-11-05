@@ -1,12 +1,11 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { User } from '../entity/user.entity';
-import * as mariadb from "mariadb";
-import { ConnectableObservable } from 'rxjs';
+import { Connection } from 'mariadb';
 
 @Injectable()
 export class UsersService {
   constructor(
-    @Inject('DATABASE_CONNECTION') private connection: mariadb.Connection
+    @Inject('DATABASE_CONNECTION') private connection: Connection
   ) {}
 
   async updateStatus(userId: number) {

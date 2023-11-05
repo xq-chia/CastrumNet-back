@@ -1,11 +1,11 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { Tenant } from "../entity/tenant.entity";
-import * as mariadb from "mariadb";
+import { Connection } from "mariadb";
 
 @Injectable()
 export class TenantsService {
   constructor(
-    @Inject('DATABASE_CONNECTION') private connection: mariadb.Connection
+    @Inject('DATABASE_CONNECTION') private connection: Connection
   ) {}
 
   async findOneById(id: number): Promise<Tenant | undefined> {
