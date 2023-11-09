@@ -7,6 +7,7 @@ import { TenantsModule } from './tenants/tenants.module';
 import { InitModule } from './init/init.module';
 import { CommandModule } from './command/command.module';
 import { RbacModule } from './rbac/rbac.module';
+import { RoleModule } from './role/role.module';
 
 @Module({
   imports: [
@@ -15,7 +16,8 @@ import { RbacModule } from './rbac/rbac.module';
     TenantsModule, 
     InitModule, 
     CommandModule, 
-    RbacModule,
+    RbacModule, 
+    RoleModule,
   ],
   controllers: [AppController],
   providers: [AppService],

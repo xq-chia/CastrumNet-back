@@ -53,6 +53,17 @@ export class InitController {
             ]
           },
           {
+            text: 'RBAC',
+            group: true,
+            hideInBreadcrumb: true,
+            children: [
+              {
+                text: 'Role',
+                link: '/role/list'
+              }
+            ]
+          },
+          {
             text: '主导航',
             i18n: 'menu.main',
             group: true,
