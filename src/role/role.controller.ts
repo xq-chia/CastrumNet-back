@@ -16,7 +16,7 @@ export class RoleController {
     async create(@Body() dto: CreateUserDto): Promise<boolean> {
         let role: Role;
 
-        role = new Role(dto.roleId, dto.role, dto.description, dto.parentId)
+        role = new Role(dto.roleId, dto.role, dto.description)
 
         return await this.roleService.save(role);
     }
