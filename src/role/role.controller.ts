@@ -1,7 +1,7 @@
 import { Body, Controller, Get, Post } from '@nestjs/common';
 import { RoleService } from './role.service';
 import { Role } from 'src/entity/role.entity';
-import { CreateUserDto } from 'src/dto/create-role.dto';
+import { CreateRoleDto } from 'src/dto/create-role.dto';
 
 @Controller('role')
 export class RoleController {
@@ -13,7 +13,7 @@ export class RoleController {
     }
 
     @Post()
-    async create(@Body() dto: CreateUserDto): Promise<boolean> {
+    async create(@Body() dto: CreateRoleDto): Promise<boolean> {
         let role: Role;
 
         role = new Role(dto.roleId, dto.role, dto.description)
