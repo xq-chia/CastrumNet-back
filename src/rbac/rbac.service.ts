@@ -18,9 +18,13 @@ export class RbacService {
     sql = 'SELECT * FROM permission WHERE object = ?';
 
     sqlResult = await this.connection.query(sql, [object]);
-    sqlResult.forEach((row) => {
-      permissions.push(new Permission(row.permId, row.object, row.allow));
-    });
+    for (const row of sqlResult) {
+      let permission: Permission;
+
+      permission = new Permission(row.permId, row.object, row.allow, row.roleId);
+
+      permissions.push(permission)
+    }
 
     return permissions;
   }
