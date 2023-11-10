@@ -6,18 +6,14 @@ import { Role } from 'src/entity/role.entity';
 export class RoleService {
     constructor(@Inject('DATABASE_CONNECTION') private connection: Connection) {}
 
-  async save(role: Role) {
+  async save(role: Role): Promise<number> {
     let sql: string;
     let sqlResult: any;
 
-    sql = 'INSERT INTO role VALUES (?, ?, ?)';
+    sql = 'INSERT INTO role VALUES (?, ?, ?) RETURNING roleId';
     sqlResult = await this.connection.query(sql, [role.roleId, role.role, role.description])
 
-    if (sqlResult.affectedRows == 1) {
-      return true;
-    } else {
-      return false;
-    }
+    return sqlResult[0].roleId
   }
 
   async findAll(): Promise<Role[]> {
