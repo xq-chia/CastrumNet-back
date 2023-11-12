@@ -4,10 +4,10 @@ export class Permission {
   allow: boolean;
   roleId: number;
 
-  constructor(permId: number, object: string, allow: number, roleId: number) {
+  constructor(permId: number, object: string, allow: boolean, roleId: number) {
     this.permId = permId;
     this.object = object;
-    this.allow = allow === 1 ? true : false;
+    this.allow = allow;
     this.roleId = roleId;
   }
 }
