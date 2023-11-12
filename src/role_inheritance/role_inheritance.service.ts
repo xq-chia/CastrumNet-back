@@ -1,6 +1,5 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { Connection } from 'mariadb';
-import { Role } from 'src/entity/role.entity';
 import { RoleInheritance } from 'src/entity/role_inheritance.entity';
 
 @Injectable()
@@ -38,5 +37,26 @@ export class RoleInheritanceService {
     }
 
     return inheritances;
+  }
+
+  async deleteAllByRoleId(roleId: number) {
+    let sql: string;
+    let sqlResult: any;
+
+    sql = 'DELETE FROM role_inheritance WHERE roleId = ?';
+    sqlResult = await this.connection.query(sql, [roleId])
+
+    if (sqlResult.affectedRows == 1) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  async updateAllByRoleId(roleId: number, roles: RoleInheritance[]) {
+    this.deleteAllByRoleId(roleId);
+    for (const role of roles) {
+      this.save(role)
+    }
   }
 }

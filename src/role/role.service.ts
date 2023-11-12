@@ -16,6 +16,21 @@ export class RoleService {
     return sqlResult[0].roleId
   }
 
+  async update(role: Role) {
+    let sql: string;
+    let sqlResult: any;
+
+    sql = 'UPDATE role SET role = ?, description = ? WHERE roleId = ?';
+    sqlResult = await this.connection.query(sql, [role.role, role.description, role.roleId]);
+
+    if (sqlResult.affectedRows == 1) {
+      return true;
+    } else {
+      return false;
+    }
+
+  }
+
   async findAll(): Promise<Role[]> {
     let sql: string;
     let roles: Role[] = [];
@@ -35,4 +50,16 @@ export class RoleService {
     return roles;
   }
 
+  async findOneByRoleId(roleId: number): Promise<Role | undefined> {
+    let sql: string;
+    let role: Role;
+    let sqlResult: any;
+
+    sql = 'SELECT * FROM role WHERE roleId = ?';
+
+    sqlResult = (await this.connection.query(sql, [roleId]))[0];
+    role = new Role(sqlResult.roleId, sqlResult.role, sqlResult.description);
+
+    return role;
+  }
 }
