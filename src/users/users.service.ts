@@ -94,4 +94,18 @@ export class UsersService {
 
     return user;
   }
+
+  async deleteByUserId(userId: number) {
+    let sql: string;
+    let sqlResult: any;
+
+    sql = 'DELETE FROM user WHERE userId = ?';
+    sqlResult = await this.connection.query(sql, [userId])
+
+    if (sqlResult.affectedRows == 1) {
+      return true;
+    } else {
+      return false;
+    }
+  }
 }
