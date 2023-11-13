@@ -99,10 +99,7 @@ export class RoleController {
         }
 
         for (const permission of dto.permissions) {
-            if (!permission.allow) {
-                permission.allow = false;
-            }
-            permissions.push(new Permission(permission.permId, permission.object, permission.allow, dto.roleId));
+            permissions.push(new Permission(permission.permId, permission.object, !!permission.allow, dto.roleId));
         }
         this.permissionService.updateAllByRoleId(roleId, permissions)
     }
