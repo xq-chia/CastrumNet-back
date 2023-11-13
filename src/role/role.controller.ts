@@ -36,8 +36,12 @@ export class RoleController {
             roleId: role.roleId,
             role: role.role,
             description: role.description,
-            parentIds: roleInheritances.map(roleInheritance => roleInheritance.parentId),
+            parentRoles: [],
             permissions: permissions
+        }
+
+        for (const roleInheritance of roleInheritances) {
+            ret.parentRoles.push(await this.roleService.findOneByRoleId(roleInheritance.parentId))
         }
 
         return ret;
