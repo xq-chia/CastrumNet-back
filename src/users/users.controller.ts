@@ -4,6 +4,7 @@ import { CreateDto } from 'src/dto/create-users.dto';
 import { User } from 'src/entity/user.entity';
 import { Tenant } from 'src/entity/tenant.entity';
 import { TenantsService } from 'src/tenants/tenants.service';
+import { EditUserDto } from 'src/dto/edit-user.dto';
 
 @Controller('users')
 export class UsersController {
@@ -44,14 +45,26 @@ export class UsersController {
       createDto.password,
       createDto.firstName,
       createDto.lastName,
+      true,
       createDto.tenantId,
     );
 
     return await this.usersService.save(user);
   }
 
+  @Patch(':userId')
+  async edit(@Param('userId') userId: number, @Body() dto: EditUserDto) {
+    let user: User;
+
+    if (!dto.status) dto.status = false;
+
+    user = new User(dto.userId, dto.username, dto.password, dto.firstName, dto.lastName, dto.status, dto.tenantId)
+
+    this.usersService.update(user);
+  }
+
   @Patch('freeze/:userId')
-  async freeze(@Param('userId') userId: any) {
+  async freeze(@Param('userId') userId: number) {
     return await this.usersService.updateStatus(userId);
   }
 }

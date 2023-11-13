@@ -8,6 +8,20 @@ export class UsersService {
     @Inject('DATABASE_CONNECTION') private connection: Connection
   ) {}
 
+  async update(user: User) {
+    let sql: string;
+    let sqlResult: any;
+
+    sql = 'UPDATE user SET username = ?, password = ?, firstName = ?, lastName = ?, tenantId = ?, status = ? WHERE userId = ?';
+    sqlResult = await this.connection.query(sql, [user.username, user.password, user.firstName, user.lastName, user.tenantId, user.status, user.userId]);
+
+    if (sqlResult.affectedRows == 1) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
   async updateStatus(userId: number) {
     let sql: string;
     let sqlResult: any;
@@ -47,7 +61,7 @@ export class UsersService {
     sqlResult.forEach(row => {
       let user: User;
 
-      user = new User(row.userId, row.username, row.password, row.firstName, row.lastName, row.tenantId)
+      user = new User(row.userId, row.username, row.password, row.firstName, row.lastName, !!row.status, row.tenantId)
 
       users.push(user)
     });
@@ -63,7 +77,7 @@ export class UsersService {
     sql = 'SELECT * FROM user WHERE username = ?';
 
     sqlResult = (await this.connection.query(sql, [username]))[0];
-    user = new User(sqlResult.userId, sqlResult.username, sqlResult.password, sqlResult.firstName, sqlResult.lastName, sqlResult.tenantId)
+    user = new User(sqlResult.userId, sqlResult.username, sqlResult.password, sqlResult.firstName, sqlResult.lastName, !!sqlResult.status, sqlResult.tenantId)
 
     return user;
   }
@@ -76,7 +90,7 @@ export class UsersService {
     sql = 'SELECT * FROM user WHERE userId = ?';
 
     sqlResult = (await this.connection.query(sql, [id]))[0];
-    user = new User(sqlResult.userId, sqlResult.username, sqlResult.password, sqlResult.firstName, sqlResult.lastName, sqlResult.tenantId)
+    user = new User(sqlResult.userId, sqlResult.username, sqlResult.password, sqlResult.firstName, sqlResult.lastName, !!sqlResult.status, sqlResult.tenantId)
 
     return user;
   }
