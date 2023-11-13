@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Patch, Post } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post } from '@nestjs/common';
 import { RoleService } from './role.service';
 import { Role } from 'src/entity/role.entity';
 import { CreateRoleDto } from 'src/dto/create-role.dto';
@@ -45,6 +45,13 @@ export class RoleController {
         }
 
         return ret;
+    }
+
+    @Delete(':roleId')
+    async delete(@Param('roleId') roleId: number) {
+        await this.roleInheritanceService.deleteAllByRoleId(roleId);
+        await this.permissionService.deleteAllByRoleId(roleId);
+        await this.roleService.deleteByRoleId(roleId);
     }
 
     @Post()

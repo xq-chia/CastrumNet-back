@@ -62,4 +62,18 @@ export class RoleService {
 
     return role;
   }
+
+  async deleteByRoleId(roleId: number) {
+    let sql: string;
+    let sqlResult: any;
+
+    sql = 'DELETE FROM role WHERE roleId = ?';
+    sqlResult = await this.connection.query(sql, [roleId])
+
+    if (sqlResult.affectedRows == 1) {
+      return true;
+    } else {
+      return false;
+    }
+  }
 }
