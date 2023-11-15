@@ -22,6 +22,17 @@ export class CommandGateway implements OnGatewayInit {
     })
   }
 
+  @SubscribeMessage('init')
+  async handleInit() {
+    this.ptyProcess.write('ssh zachia-dev@127.0.0.1')
+    this.ptyProcess.write('\u000d')
+    await new Promise(resolve => setTimeout(resolve, 50));
+    this.ptyProcess.write('xq010614chia')
+    this.ptyProcess.write('\u000d')
+    await new Promise(resolve => setTimeout(resolve, 1));
+    this.ptyProcess.write('\u000c')
+  }
+
   @SubscribeMessage('buffer')
   handleBuffer(@MessageBody() buffer: string) {
     this.buffer = buffer.trim();
