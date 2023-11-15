@@ -64,6 +64,17 @@ export class InitController {
             ]
           },
           {
+            text: 'Host',
+            group: true,
+            hideInBreadcrumb: true,
+            children: [
+              {
+                text: 'Host',
+                link: '/host/host'
+              }
+            ]
+          },
+          {
             text: '主导航',
             i18n: 'menu.main',
             group: true,

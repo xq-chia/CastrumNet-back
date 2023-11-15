@@ -9,6 +9,7 @@ import { CommandModule } from './command/command.module';
 import { RbacModule } from './rbac/rbac.module';
 import { RoleModule } from './role/role.module';
 import { RoleInheritanceModule } from './role_inheritance/role_inheritance.module';
+import { HostModule } from './host/host.module';
 
 @Module({
   imports: [
@@ -20,6 +21,7 @@ import { RoleInheritanceModule } from './role_inheritance/role_inheritance.modul
     RbacModule, 
     RoleModule, 
     RoleInheritanceModule, 
+    HostModule, 
   ],
   controllers: [AppController],
   providers: [AppService],
