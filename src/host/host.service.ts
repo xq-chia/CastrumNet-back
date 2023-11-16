@@ -8,6 +8,20 @@ export class HostService {
     @Inject('DATABASE_CONNECTION') private connection: Connection
   ) {}
 
+  async save(host: Host): Promise<boolean> {
+    let sql: string;
+    let sqlResult: any;
+
+    sql = 'INSERT INTO host (host, ipAddress) VALUES (?, ?)';
+    sqlResult = await this.connection.query(sql, [host.host, host.ipAddress])
+
+    if (sqlResult.affectedRow == 1) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
   async findAll() {
     let sql: string;
     let hosts: Host[] = [];
