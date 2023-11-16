@@ -42,17 +42,6 @@ export class InitController {
             ]
           },
           {
-            text: 'Terminal',
-            group: true,
-            hideInBreadcrumb: true,
-            children: [
-              {
-                text: 'Terminal',
-                link: '/terminal/terminal'
-              }
-            ]
-          },
-          {
             text: 'RBAC',
             group: true,
             hideInBreadcrumb: true,

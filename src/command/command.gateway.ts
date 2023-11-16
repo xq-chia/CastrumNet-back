@@ -3,6 +3,8 @@ import * as os from 'os';
 import * as pty from 'node-pty';
 import { Server } from 'socket.io';
 import { RbacService } from 'src/rbac/rbac.service';
+import { HostService } from 'src/host/host.service';
+import { Host } from 'src/entity/host.entity';
 
 @WebSocketGateway({ cors: true })
 export class CommandGateway implements OnGatewayInit {
@@ -14,7 +16,10 @@ export class CommandGateway implements OnGatewayInit {
   buffer: string = '';
   @WebSocketServer() server: Server;
 
-  constructor(private rbacService: RbacService) { }
+  constructor(
+    private rbacService: RbacService,
+    private hostService: HostService
+    ) { }
 
   afterInit(server: Server) {
     this.ptyProcess.onData(output => {
@@ -23,8 +28,12 @@ export class CommandGateway implements OnGatewayInit {
   }
 
   @SubscribeMessage('init')
-  async handleInit() {
-    this.ptyProcess.write('ssh zachia-dev@127.0.0.1')
+  async handleInit(@MessageBody() hostId: number) {
+    let host: Host;
+
+    host = await this.hostService.findOneByHostId(hostId)
+
+    this.ptyProcess.write(`ssh zachia-dev@${host.ipAddress}`)
     this.ptyProcess.write('\u000d')
     await new Promise(resolve => setTimeout(resolve, 500));
     this.ptyProcess.write('xq010614chia')
