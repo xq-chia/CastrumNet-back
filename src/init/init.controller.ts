@@ -59,7 +59,7 @@ export class InitController {
             children: [
               {
                 text: 'Host',
-                link: '/host/host'
+                link: '/host/list'
               }
             ]
           },
