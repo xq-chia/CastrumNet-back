@@ -35,9 +35,6 @@ export class CommandGateway implements OnGatewayInit {
 
     this.ptyProcess.write(`ssh zachia-dev@${host.ipAddress}`)
     this.ptyProcess.write('\u000d')
-    await new Promise(resolve => setTimeout(resolve, 500));
-    this.ptyProcess.write('xq010614chia')
-    this.ptyProcess.write('\u000d')
     await new Promise(resolve => setTimeout(resolve, 10));
     this.ptyProcess.write('\u000c')
   }
