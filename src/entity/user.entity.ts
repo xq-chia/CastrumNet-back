@@ -7,7 +7,7 @@ export class User {
   status: boolean;
   tenantId: number;
 
-  constructor (userId: number, username: string, password: string, firstName: string, lastName: string, status: boolean, tenantId: number) {
+  constructor (username: string, password: string, firstName: string, lastName: string, status: boolean, tenantId: number, userId?: number) {
     this.userId = userId;
     this.username = username;
     this.password = password;

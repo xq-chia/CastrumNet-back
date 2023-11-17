@@ -33,10 +33,10 @@ export class PermissionService {
     for (const row of sqlResult) {
       permissions.push(
         new Permission(
-          row.permId, 
           row.object, 
           !!row.allow, 
-          row.roleId
+          row.roleId,
+          row.permId
         ),
       );
     }
@@ -57,10 +57,10 @@ export class PermissionService {
     for (const row of sqlResult) {
       permissions.push(
         new Permission(
-          row.permId, 
           row.object, 
           !!row.allow, 
-          row.roleId
+          row.roleId,
+          row.permId
         ),
       );
     }

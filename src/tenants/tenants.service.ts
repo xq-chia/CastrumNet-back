@@ -19,7 +19,7 @@ export class TenantsService {
     for (const row of sqlResult) {
       let tenant: Tenant;
 
-      tenant = new Tenant(row.tenantId, row.role);
+      tenant = new Tenant(row.role, row.tenantId);
 
       tenants.push(tenant);
     }
@@ -27,15 +27,15 @@ export class TenantsService {
     return tenants;
   }
 
-  async findOneById(id: number): Promise<Tenant | undefined> {
+  async findOneById(tenantId: number): Promise<Tenant | undefined> {
     let sql: string;
     let sqlResult: any;
     let tenant: Tenant;
 
     sql = "SELECT * FROM tenant WHERE tenantId = ?";
 
-    sqlResult = (await this.connection.query(sql, [id]))[0];
-    tenant = new Tenant(sqlResult.tenantId, sqlResult.role);
+    sqlResult = (await this.connection.query(sql, [tenantId]))[0];
+    tenant = new Tenant(sqlResult.role, sqlResult.tenantId);
 
     return tenant;
   }

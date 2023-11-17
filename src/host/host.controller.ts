@@ -17,7 +17,7 @@ export class HostController {
     async save(@Body() dto: CreateHostDto) {
         let host: Host;
 
-        host = new Host(0, dto.host, dto.ipAddress)
+        host = new Host(dto.host, dto.ipAddress)
 
         await this.hostService.save(host);
     }

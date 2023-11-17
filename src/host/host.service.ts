@@ -36,7 +36,7 @@ export class HostService {
     sqlResult.forEach(row => {
       let host: Host;
 
-      host = new Host(row.hostId, row.host, row.ipAddress)
+      host = new Host(row.host, row.ipAddress, row.hostId)
 
       hosts.push(host)
     });
@@ -52,7 +52,7 @@ export class HostService {
     sql = 'SELECT * FROM host WHERE hostId = ?';
 
     sqlResult = (await this.connection.query(sql, [hostId]))[0];
-    host = new Host(sqlResult.hostId, sqlResult.findOneByHostId, sqlResult.ipAddress)
+    host = new Host(sqlResult.findOneByHostId, sqlResult.ipAddress, sqlResult.hostId)
 
     return host;
   }

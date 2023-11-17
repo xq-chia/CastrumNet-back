@@ -54,13 +54,13 @@ export class UsersService {
     sql = 'SELECT * FROM user';
 
     sqlResult = await this.connection.query(sql);
-    sqlResult.forEach(row => {
+    for (const row of sqlResult) {
       let user: User;
 
-      user = new User(row.userId, row.username, row.password, row.firstName, row.lastName, !!row.status, row.tenantId)
+      user = new User(row.username, row.password, row.firstName, row.lastName, !!row.status, row.tenantId, row.userId);
 
-      users.push(user)
-    });
+      users.push(user);
+    }
 
     return users;
   }
@@ -73,7 +73,7 @@ export class UsersService {
     sql = 'SELECT * FROM user WHERE username = ?';
 
     sqlResult = (await this.connection.query(sql, [username]))[0];
-    user = new User(sqlResult.userId, sqlResult.username, sqlResult.password, sqlResult.firstName, sqlResult.lastName, !!sqlResult.status, sqlResult.tenantId)
+    user = new User(sqlResult.username, sqlResult.password, sqlResult.firstName, sqlResult.lastName, !!sqlResult.status, sqlResult.tenantId, sqlResult.userId);
 
     return user;
   }
@@ -86,7 +86,7 @@ export class UsersService {
     sql = 'SELECT * FROM user WHERE userId = ?';
 
     sqlResult = (await this.connection.query(sql, [id]))[0];
-    user = new User(sqlResult.userId, sqlResult.username, sqlResult.password, sqlResult.firstName, sqlResult.lastName, !!sqlResult.status, sqlResult.tenantId)
+    user = new User(sqlResult.username, sqlResult.password, sqlResult.firstName, sqlResult.lastName, !!sqlResult.status, sqlResult.tenantId, sqlResult.userId)
 
     return user;
   }

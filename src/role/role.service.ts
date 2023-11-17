@@ -10,8 +10,8 @@ export class RoleService {
     let sql: string;
     let sqlResult: any;
 
-    sql = 'INSERT INTO role VALUES (?, ?, ?) RETURNING roleId';
-    sqlResult = await this.connection.query(sql, [role.roleId, role.role, role.description])
+    sql = 'INSERT INTO role (role, description) VALUES (?, ?) RETURNING roleId';
+    sqlResult = await this.connection.query(sql, [role.role, role.description])
 
     return sqlResult[0].roleId
   }
@@ -42,7 +42,7 @@ export class RoleService {
     sqlResult.forEach(row => {
       let role: Role;
 
-      role = new Role(row.roleId, row.role, row.description);
+      role = new Role(row.role, row.description, row.roleId);
 
       roles.push(role);
     });
@@ -58,7 +58,7 @@ export class RoleService {
     sql = 'SELECT * FROM role WHERE roleId = ?';
 
     sqlResult = (await this.connection.query(sql, [roleId]))[0];
-    role = new Role(sqlResult.roleId, sqlResult.role, sqlResult.description);
+    role = new Role(sqlResult.role, sqlResult.description, sqlResult.roleId);
 
     return role;
   }

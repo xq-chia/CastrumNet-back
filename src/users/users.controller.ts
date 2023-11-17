@@ -44,7 +44,6 @@ export class UsersController {
     let userId: number;
 
     user = new User(
-      0,
       createDto.username,
       createDto.password,
       createDto.firstName,
@@ -65,7 +64,7 @@ export class UsersController {
 
     if (!dto.status) dto.status = false;
 
-    user = new User(dto.userId, dto.username, dto.password, dto.firstName, dto.lastName, dto.status, dto.tenantId)
+    user = new User(dto.username, dto.password, dto.firstName, dto.lastName, dto.status, dto.tenantId, dto.userId)
 
     this.usersService.update(user);
   }

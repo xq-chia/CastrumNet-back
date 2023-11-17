@@ -59,7 +59,7 @@ export class RoleController {
         let role: Role;
         let roleId: number;
 
-        role = new Role(dto.roleId, dto.role, dto.description)
+        role = new Role(dto.role, dto.description)
 
         roleId = await this.roleService.save(role);
 
@@ -73,7 +73,7 @@ export class RoleController {
             if (!permission.allow) {
                 permission.allow = false;
             }
-            this.permissionService.save(new Permission(permission.permId, permission.object, permission.allow, roleId));
+            this.permissionService.save(new Permission(permission.object, permission.allow, roleId));
         }
 
         return true;
@@ -85,7 +85,7 @@ export class RoleController {
         let parents: RoleInheritance[] = [];
         let permissions: Permission[] = [];
 
-        role = new Role(roleId, dto.role, dto.description)
+        role = new Role(dto.role, dto.description, dto.roleId)
 
         this.roleService.update(role);
 
@@ -99,7 +99,7 @@ export class RoleController {
         }
 
         for (const permission of dto.permissions) {
-            permissions.push(new Permission(permission.permId, permission.object, !!permission.allow, dto.roleId));
+            permissions.push(new Permission(permission.object, !!permission.allow, dto.roleId));
         }
         this.permissionService.updateAllByRoleId(roleId, permissions)
     }
