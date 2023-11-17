@@ -8,6 +8,25 @@ export class TenantsService {
     @Inject('DATABASE_CONNECTION') private connection: Connection
   ) {}
 
+  async findAll(): Promise<Tenant[]> {
+    let sql: string;
+    let tenants: Tenant[] = [];
+    let sqlResult: any;
+
+    sql = 'SELECT * FROM tenant';
+
+    sqlResult = await this.connection.query(sql);
+    for (const row of sqlResult) {
+      let tenant: Tenant;
+
+      tenant = new Tenant(row.tenantId, row.role);
+
+      tenants.push(tenant);
+    }
+
+    return tenants;
+  }
+
   async findOneById(id: number): Promise<Tenant | undefined> {
     let sql: string;
     let sqlResult: any;
