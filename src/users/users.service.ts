@@ -40,14 +40,10 @@ export class UsersService {
     let sql: string;
     let sqlResult: any;
 
-    sql = 'INSERT INTO user VALUES (?, ?, ?, ?, ?, ?)';
-    sqlResult = await this.connection.query(sql, [user.userId, user.username, user.password, user.firstName, user.lastName, user.tenantId, 1])
+    sql = 'INSERT INTO user (username, password, firstName, lastName, tenantId, status) VALUES (?, ?, ?, ?, ?, ?) RETURNING userId';
+    sqlResult = await this.connection.query(sql, [user.username, user.password, user.firstName, user.lastName, user.tenantId, 1])
 
-    if (sqlResult.affectedRows == 1) {
-      return true;
-    } else {
-      return false;
-    }
+    return sqlResult[0].userId
   }
 
   async findAll() {

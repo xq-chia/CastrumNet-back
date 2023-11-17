@@ -5,4 +5,5 @@ export class CreateDto {
   firstName: string;
   lastName: string;
   tenantId: number;
+  hostIds: number[];
 }

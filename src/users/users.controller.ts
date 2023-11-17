@@ -5,12 +5,15 @@ import { User } from 'src/entity/user.entity';
 import { Tenant } from 'src/entity/tenant.entity';
 import { TenantsService } from 'src/tenants/tenants.service';
 import { EditUserDto } from 'src/dto/edit-user.dto';
+import { UserHostService } from 'src/user_host/user_host.service';
+import { UserHost } from 'src/entity/user_host.entity';
 
 @Controller('users')
 export class UsersController {
   constructor(
     private usersService: UsersService,
     private tenantsService: TenantsService,
+    private userHostService: UserHostService
   ) {}
 
   @Get()
@@ -36,11 +39,12 @@ export class UsersController {
   }
 
   @Post()
-  async create(@Body() createDto: CreateDto): Promise<boolean> {
+  async create(@Body() createDto: CreateDto) {
     let user: User;
+    let userId: number;
 
     user = new User(
-      createDto.userId,
+      0,
       createDto.username,
       createDto.password,
       createDto.firstName,
@@ -49,7 +53,10 @@ export class UsersController {
       createDto.tenantId,
     );
 
-    return await this.usersService.save(user);
+    userId = await this.usersService.save(user);
+    for (const hostId of createDto.hostIds) {
+      this.userHostService.save(new UserHost(userId, hostId));
+    }
   }
 
   @Patch(':userId')
