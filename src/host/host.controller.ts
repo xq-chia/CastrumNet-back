@@ -2,6 +2,7 @@ import { Body, Controller, Get, Post } from '@nestjs/common';
 import { HostService } from './host.service';
 import { CreateHostDto } from 'src/dto/create-host.dto';
 import { Host } from 'src/entity/host.entity';
+import { TestConnHostDto } from 'src/dto/testConn-host.dto';
 
 @Controller('host')
 export class HostController {
@@ -19,5 +20,10 @@ export class HostController {
         host = new Host(0, dto.host, dto.ipAddress)
 
         await this.hostService.save(host);
+    }
+
+    @Post('testConn')
+    async testConn(@Body() dto: TestConnHostDto) {
+        return await this.hostService.testConn(dto.ipAddress);
     }
 }

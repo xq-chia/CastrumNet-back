@@ -1,11 +1,14 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { Connection } from 'mariadb';
 import { Host } from 'src/entity/host.entity';
+import { NodeSSH } from 'node-ssh';
 
 @Injectable()
 export class HostService {
+  ssh: NodeSSH = new NodeSSH();
+
   constructor(
-    @Inject('DATABASE_CONNECTION') private connection: Connection
+    @Inject('DATABASE_CONNECTION') private connection: Connection,
   ) {}
 
   async save(host: Host): Promise<boolean> {
@@ -52,5 +55,19 @@ export class HostService {
     host = new Host(sqlResult.hostId, sqlResult.findOneByHostId, sqlResult.ipAddress)
 
     return host;
+  }
+
+  async testConn(ipAddress: string) {
+    try {
+      await this.ssh.connect({
+        host: `${ipAddress}`,
+        username: 'zachia-dev',
+        privateKeyPath: '/home/zachia-dev/.ssh/id_rsa'
+      })
+
+      return true;
+    } catch (err) {
+      return false;
+    }
   }
 }
