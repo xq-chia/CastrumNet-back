@@ -10,7 +10,7 @@ export class UserHostService {
     let sql: string;
     let sqlResult: any;
 
-    sql = 'INSERT INTO user_host VALUES (?, ?)';
+    sql = 'INSERT INTO user_host (userId, hostId) VALUES (?, ?)';
     sqlResult = await this.connection.query(sql, [userHost.userId, userHost.hostId]);
 
     if (sqlResult.affectedRows == 1) {
