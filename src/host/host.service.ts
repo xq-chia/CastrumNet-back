@@ -52,7 +52,7 @@ export class HostService {
     sql = 'SELECT * FROM host WHERE hostId = ?';
 
     sqlResult = (await this.connection.query(sql, [hostId]))[0];
-    host = new Host(sqlResult.findOneByHostId, sqlResult.ipAddress, sqlResult.hostId)
+    host = new Host(sqlResult.host, sqlResult.ipAddress, sqlResult.hostId)
 
     return host;
   }
