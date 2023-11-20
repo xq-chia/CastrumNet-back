@@ -19,4 +19,24 @@ export class UserHostService {
       return false;
     }
   }
+
+  async findAllByUserId(userId: number): Promise<UserHost[]> {
+    let sql: string;
+    let sqlResult: any;
+    let userHosts: UserHost[] = [];
+
+    sql = "SELECT * FROM user_host WHERE userId = ?";
+
+    sqlResult = (await this.connection.query(sql, [userId]));
+
+    for (const row of sqlResult) {
+      let userHost: UserHost;
+
+      userHost = new UserHost(row.userId, row.hostId, row.userHostId);
+
+      userHosts.push(userHost);
+    }
+
+    return userHosts;
+  }
 }

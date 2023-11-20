@@ -6,5 +6,5 @@ export class EditUserDto {
   lastName: string;
   status: boolean;
   tenantId: number;
+  hostIds: number[];
 }
-

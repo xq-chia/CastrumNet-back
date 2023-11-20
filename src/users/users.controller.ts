@@ -7,13 +7,16 @@ import { TenantsService } from 'src/tenants/tenants.service';
 import { EditUserDto } from 'src/dto/edit-user.dto';
 import { UserHostService } from 'src/user_host/user_host.service';
 import { UserHost } from 'src/entity/user_host.entity';
+import { HostService } from 'src/host/host.service';
+import { Host } from 'src/entity/host.entity';
 
 @Controller('users')
 export class UsersController {
   constructor(
     private usersService: UsersService,
     private tenantsService: TenantsService,
-    private userHostService: UserHostService
+    private userHostService: UserHostService,
+    private hostService: HostService
   ) {}
 
   @Get()
@@ -25,14 +28,25 @@ export class UsersController {
   async fetch(@Param('userId') userId: number) {
     let user: User;
     let tenant: Tenant;
+    let userHosts: UserHost[] = [];
+    let hosts: Host[] = [];
     let ret: any;
 
     user = await this.usersService.findOneById(userId);
     tenant = await this.tenantsService.findOneById(user.tenantId);
+    userHosts = await this.userHostService.findAllByUserId(userId);
+    for (const userHost of userHosts) {
+      let host: Host;
+
+      host = await this.hostService.findOneByHostId(userHost.hostId);
+
+      hosts.push(host);
+    }
 
     ret = {
       user: user,
-      tenant: tenant
+      tenant: tenant,
+      hosts: hosts
     };
 
     return ret;
@@ -62,11 +76,16 @@ export class UsersController {
   async edit(@Param('userId') userId: number, @Body() dto: EditUserDto) {
     let user: User;
 
-    if (!dto.status) dto.status = false;
+    dto.status = dto.status ?? false;
 
     user = new User(dto.username, dto.password, dto.firstName, dto.lastName, dto.status, dto.tenantId, dto.userId)
 
     this.usersService.update(user);
+    if (dto.hostIds) {
+      for (const hostId of dto.hostIds) {
+        this.userHostService.save(new UserHost(user.userId, hostId));
+      }
+    }
   }
 
   @Patch('freeze/:userId')
