@@ -53,6 +53,10 @@ export class InitController {
               {
                 text: 'Role Assignment',
                 link: '/roleAssignment/list'
+              },
+              {
+                text: 'Host Assignment',
+                link: '/hostAssignment/list'
               }
             ]
           },
