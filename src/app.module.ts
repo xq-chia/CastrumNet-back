@@ -11,6 +11,7 @@ import { RoleModule } from './role/role.module';
 import { RoleInheritanceModule } from './role_inheritance/role_inheritance.module';
 import { HostModule } from './host/host.module';
 import { UserHostModule } from './user_host/user_host.module';
+import { RoleAssignmentModule } from './role_assignment/role_assignment.module';
 
 @Module({
   imports: [
@@ -24,6 +25,7 @@ import { UserHostModule } from './user_host/user_host.module';
     RoleInheritanceModule, 
     HostModule, 
     UserHostModule, 
+    RoleAssignmentModule, 
   ],
   controllers: [AppController],
   providers: [AppService],
