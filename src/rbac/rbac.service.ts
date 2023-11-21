@@ -4,13 +4,40 @@ import { Connection } from 'mariadb';
 import * as parse from 'bash-parser'
 import * as traverse from 'bash-ast-traverser';
 import { PermissionService } from 'src/permission/permission.service';
+import { Role } from 'src/entity/role.entity';
+import { RoleInheritanceService } from 'src/role_inheritance/role_inheritance.service';
+import { RoleInheritance } from 'src/entity/role_inheritance.entity';
+import { RoleService } from 'src/role/role.service';
 
 @Injectable()
 export class RbacService {
   constructor(
     @Inject('DATABASE_CONNECTION') private connection: Connection,
     private permissisonService: PermissionService,
+    private roleInheritanceService: RoleInheritanceService,
+    private roleService: RoleService
   ) {}
+
+  async getPermissionsByRoleId(roleId: number): Promise<Permission[]> {
+    let roleInheritances: RoleInheritance[];
+    let permissions: Permission[] = [];
+
+    roleInheritances = await this.roleInheritanceService.findByRoleId(roleId);
+
+    if (roleInheritances.length) {
+      for (const roleInheritance of roleInheritances) {
+        let parent: Role;
+
+        parent = await this.roleService.findOneByRoleId(roleInheritance.parentId);
+        permissions = permissions.concat(await this.permissisonService.findAllByRoleId(roleId));
+        permissions = permissions.concat(...await this.getPermissionsByRoleId(parent.roleId));
+      }
+    } else {
+      return this.permissisonService.findAllByRoleId(roleId); 
+    }
+
+    return permissions;
+  }
 
   async checkPermission(buffer: string): Promise<boolean> {
     let permissions: Permission[] = [];
