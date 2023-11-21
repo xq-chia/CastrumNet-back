@@ -9,6 +9,8 @@ import { UserHostService } from 'src/user_host/user_host.service';
 import { UserHost } from 'src/entity/user_host.entity';
 import { HostService } from 'src/host/host.service';
 import { Host } from 'src/entity/host.entity';
+import { RoleAssignment } from 'src/entity/role_assignment.entity';
+import { RoleAssignmentService } from 'src/role_assignment/role_assignment.service';
 
 @Controller('users')
 export class UsersController {
@@ -16,7 +18,8 @@ export class UsersController {
     private usersService: UsersService,
     private tenantsService: TenantsService,
     private userHostService: UserHostService,
-    private hostService: HostService
+    private hostService: HostService,
+    private roleAssignmentService: RoleAssignmentService
   ) {}
 
   @Get()
@@ -29,7 +32,7 @@ export class UsersController {
     let user: User;
     let tenant: Tenant;
     let userHosts: UserHost[] = [];
-    let hosts: Host[] = [];
+    let roleAssignments: any[] = [];
     let ret: any;
 
     user = await this.usersService.findOneById(userId);
@@ -37,16 +40,21 @@ export class UsersController {
     userHosts = await this.userHostService.findAllByUserId(userId);
     for (const userHost of userHosts) {
       let host: Host;
+      let _roleAssignments: RoleAssignment[];
+      let roleIds: number[];
 
       host = await this.hostService.findOneByHostId(userHost.hostId);
+      _roleAssignments = await this.roleAssignmentService.findAllByUserHostId(userHost.userHostId);
+      roleIds = _roleAssignments.map(val => val.roleId);
 
-      hosts.push(host);
+      roleAssignments.push({ host: host.host, ipAddress: host.ipAddress, userHostId: userHost.userHostId, roleIds: roleIds });
     }
 
     ret = {
       user: user,
       tenant: tenant,
-      hosts: hosts
+      userHosts: userHosts,
+      roleAssignments: roleAssignments
     };
 
     return ret;
@@ -81,6 +89,11 @@ export class UsersController {
     user = new User(dto.username, dto.password, dto.firstName, dto.lastName, dto.status, dto.tenantId, dto.userId)
 
     this.usersService.update(user);
+    if (dto.userHosts) {
+      for (const userHost of dto.userHosts) {
+        this.userHostService.deleteAllByUserHostId(userHost.userHostId);
+      }
+    }
     if (dto.hostIds) {
       for (const hostId of dto.hostIds) {
         this.userHostService.save(new UserHost(user.userId, hostId));

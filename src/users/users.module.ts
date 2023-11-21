@@ -5,9 +5,10 @@ import { UsersController } from './users.controller';
 import { TenantsService } from 'src/tenants/tenants.service';
 import { UserHostService } from 'src/user_host/user_host.service';
 import { HostService } from 'src/host/host.service';
+import { RoleAssignmentService } from 'src/role_assignment/role_assignment.service';
 
 @Module({
-  providers: [UsersService, TenantsService, UserHostService, HostService],
+  providers: [UsersService, TenantsService, UserHostService, HostService, RoleAssignmentService],
   exports: [UsersService],
   imports: [DbModule],
   controllers: [UsersController]
