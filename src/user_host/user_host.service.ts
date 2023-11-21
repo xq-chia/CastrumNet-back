@@ -53,4 +53,12 @@ export class UserHostService {
       return false;
     }
   }
+
+  async deleteAllByUserId(userId: number) {
+    let sql: string;
+    let sqlResult: any;
+
+    sql = 'DELETE FROM user_host WHERE userId = ?';
+    sqlResult = await this.connection.query(sql, [userId])
+  }
 }
