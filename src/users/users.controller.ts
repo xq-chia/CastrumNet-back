@@ -86,19 +86,9 @@ export class UsersController {
 
     dto.status = dto.status ?? false;
 
-    user = new User(dto.username, dto.password, dto.firstName, dto.lastName, dto.status, dto.tenantId, dto.userId)
+    user = new User(dto.username, dto.password, dto.firstName, dto.lastName, dto.status, dto.tenantId, userId)
 
     this.usersService.update(user);
-    if (dto.userHosts) {
-      for (const userHost of dto.userHosts) {
-        this.userHostService.deleteAllByUserHostId(userHost.userHostId);
-      }
-    }
-    if (dto.hostIds) {
-      for (const hostId of dto.hostIds) {
-        this.userHostService.save(new UserHost(user.userId, hostId));
-      }
-    }
   }
 
   @Patch('freeze/:userId')

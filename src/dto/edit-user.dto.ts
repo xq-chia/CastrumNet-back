@@ -8,6 +8,4 @@ export class EditUserDto {
   lastName: string;
   status: boolean;
   tenantId: number;
-  userHosts: UserHost[];
-  hostIds: number[];
 }
