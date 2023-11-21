@@ -19,6 +19,7 @@ export class RbacService {
   ) {}
 
   async getPermissionsByRoleId(roleId: number): Promise<Permission[]> {
+    console.log(`calling getPermissionsByRoleId with ${roleId}`)
     let roleInheritances: RoleInheritance[];
     let permissions: Permission[] = [];
 
@@ -29,11 +30,11 @@ export class RbacService {
         let parent: Role;
 
         parent = await this.roleService.findOneByRoleId(roleInheritance.parentId);
-        permissions = permissions.concat(await this.permissisonService.findAllByRoleId(roleId));
         permissions = permissions.concat(...await this.getPermissionsByRoleId(parent.roleId));
       }
+      permissions = permissions.concat(await this.permissisonService.findAllByRoleId(roleId));
     } else {
-      return this.permissisonService.findAllByRoleId(roleId); 
+      return await this.permissisonService.findAllByRoleId(roleId); 
     }
 
     return permissions;
