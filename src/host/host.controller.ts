@@ -1,8 +1,9 @@
-import { Body, Controller, Get, Param, Post } from '@nestjs/common';
+import { Body, Controller, Get, Param, Patch, Post } from '@nestjs/common';
 import { HostService } from './host.service';
 import { CreateHostDto } from 'src/dto/create-host.dto';
 import { Host } from 'src/entity/host.entity';
 import { TestConnHostDto } from 'src/dto/testConn-host.dto';
+import { EditHostDto } from 'src/dto/edit-host.dto';
 
 @Controller('host')
 export class HostController {
@@ -30,5 +31,14 @@ export class HostController {
     @Post('testConn')
     async testConn(@Body() dto: TestConnHostDto) {
         return await this.hostService.testConn(dto.ipAddress);
+    }
+
+    @Patch(':hostId')
+    async edit(@Param('hostId') hostId: number, @Body() dto: EditHostDto) {
+        let host: Host;
+        
+        host = new Host(dto.host, dto.ipAddress, hostId);
+
+        await this.hostService.update(host);
     }
 }

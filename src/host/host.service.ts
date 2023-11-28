@@ -57,6 +57,20 @@ export class HostService {
     return host;
   }
 
+  async update(host: Host) {
+    let sql: string;
+    let sqlResult: any;
+
+    sql = 'UPDATE host SET host = ?, ipAddress = ? WHERE hostId = ?';
+    sqlResult = await this.connection.query(sql, [host.host, host.ipAddress, host.hostId]);
+
+    if (sqlResult.affectedRows == 1) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
   async testConn(ipAddress: string) {
     try {
       await this.ssh.connect({
