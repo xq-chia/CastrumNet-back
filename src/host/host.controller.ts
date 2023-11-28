@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post } from '@nestjs/common';
 import { HostService } from './host.service';
 import { CreateHostDto } from 'src/dto/create-host.dto';
 import { Host } from 'src/entity/host.entity';
@@ -11,6 +11,11 @@ export class HostController {
     @Get()
     fetchAll() {
         return this.hostService.findAll()
+    }
+
+    @Get(':hostId')
+    fetch(@Param('hostId') hostId: number) {
+        return this.hostService.findOneByHostId(hostId);
     }
 
     @Post()
