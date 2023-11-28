@@ -84,4 +84,18 @@ export class HostService {
       return false;
     }
   }
+
+  async deleteByHostId(hostId: number) {
+    let sql: string;
+    let sqlResult: any;
+
+    sql = 'DELETE FROM host WHERE hostId = ?';
+    sqlResult = await this.connection.query(sql, [hostId])
+
+    if (sqlResult.affectedRows == 1) {
+      return true;
+    } else {
+      return false;
+    }
+  }
 }

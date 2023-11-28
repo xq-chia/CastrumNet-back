@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Patch, Post } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post } from '@nestjs/common';
 import { HostService } from './host.service';
 import { CreateHostDto } from 'src/dto/create-host.dto';
 import { Host } from 'src/entity/host.entity';
@@ -40,5 +40,10 @@ export class HostController {
         host = new Host(dto.host, dto.ipAddress, hostId);
 
         await this.hostService.update(host);
+    }
+
+    @Delete(':hostId')
+    delete(@Param('hostId') hostId: number) {
+        this.hostService.deleteByHostId(hostId);
     }
 }
