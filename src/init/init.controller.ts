@@ -31,13 +31,17 @@ export class InitController {
         },
         menu: [
           {
-            text: 'User Management',
+            text: 'Entity',
             group: true,
             hideInBreadcrumb: true,
             children: [
               {
-                text: 'User List',
+                text: 'User',
                 link: '/user/list'
+              },
+              {
+                text: 'Host',
+                link: '/host/list'
               }
             ]
           },
@@ -60,17 +64,17 @@ export class InitController {
               }
             ]
           },
-          {
-            text: 'Host',
-            group: true,
-            hideInBreadcrumb: true,
-            children: [
-              {
-                text: 'Host',
-                link: '/host/list'
-              }
-            ]
-          },
+          // {
+          //   text: 'Host',
+          //   group: true,
+          //   hideInBreadcrumb: true,
+          //   children: [
+          //     {
+          //       text: 'Host',
+          //       link: '/host/list'
+          //     }
+          //   ]
+          // },
           {
             text: '主导航',
             i18n: 'menu.main',
