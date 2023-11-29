@@ -64,17 +64,17 @@ export class InitController {
               }
             ]
           },
-          // {
-          //   text: 'Host',
-          //   group: true,
-          //   hideInBreadcrumb: true,
-          //   children: [
-          //     {
-          //       text: 'Host',
-          //       link: '/host/list'
-          //     }
-          //   ]
-          // },
+          {
+            text: 'Workstation',
+            group: true,
+            hideInBreadcrumb: true,
+            children: [
+              {
+                text: 'Workstation',
+                link: '/workstation/list'
+              }
+            ]
+          },
           {
             text: '主导航',
             i18n: 'menu.main',
