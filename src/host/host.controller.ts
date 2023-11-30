@@ -1,10 +1,12 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post, UseInterceptors } from '@nestjs/common';
 import { HostService } from './host.service';
 import { CreateHostDto } from 'src/dto/create-host.dto';
 import { Host } from 'src/entity/host.entity';
 import { TestConnHostDto } from 'src/dto/testConn-host.dto';
 import { EditHostDto } from 'src/dto/edit-host.dto';
+import { TransformInterceptor } from 'src/interceptor/transform/transform.interceptor';
 
+@UseInterceptors(TransformInterceptor)
 @Controller('host')
 export class HostController {
     constructor(private hostService: HostService) {}
@@ -30,7 +32,7 @@ export class HostController {
 
     @Post('testConn')
     async testConn(@Body() dto: TestConnHostDto) {
-        return await this.hostService.testConn(dto.ipAddress);
+        return { isUp: await this.hostService.testConn(dto.ipAddress) };
     }
 
     @Patch(':hostId')
