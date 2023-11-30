@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post, UseInterceptors } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateDto } from 'src/dto/create-users.dto';
 import { User } from 'src/entity/user.entity';
@@ -11,7 +11,9 @@ import { HostService } from 'src/host/host.service';
 import { Host } from 'src/entity/host.entity';
 import { RoleAssignment } from 'src/entity/role_assignment.entity';
 import { RoleAssignmentService } from 'src/role_assignment/role_assignment.service';
+import { TransformInterceptor } from 'src/interceptor/transform/transform.interceptor';
 
+@UseInterceptors(TransformInterceptor)
 @Controller('users')
 export class UsersController {
   constructor(
