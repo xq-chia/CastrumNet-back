@@ -6,7 +6,6 @@ import { Observable, catchError, tap } from 'rxjs';
 export class AccountingInterceptor implements NestInterceptor {
   intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
     if (context.getClass().name.endsWith('Controller')) {
-      console.log('test')
       let req: any;
 
       req = context.switchToHttp().getRequest();
