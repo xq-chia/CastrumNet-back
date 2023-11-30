@@ -11,26 +11,25 @@ import { HostService } from 'src/host/host.service';
 
 @Controller('roleAssignment')
 export class RoleAssignmentController {
+  constructor(
+      private roleAssignmentService: RoleAssignmentService,
+      private userService: UsersService,
+      private userHostService: UserHostService,
+      private hostService: HostService
+  ) {}
 
-    constructor(
-        private roleAssignmentService: RoleAssignmentService,
-        private userService: UsersService,
-        private userHostService: UserHostService,
-        private hostService: HostService
-    ) {}
+  @Get()
+  async fetchAll() {
+    let users: User[];
+    let ret: any[] = [];
 
-    @Get()
-    async fetchAll() {
-        let users: User[];
-        let ret: any[] = [];
-
-        users = await this.userService.findAll();
-        for (const user of users) {
-            ret.push({ userId: user.userId, username: user.username })
-        }
-
-        return ret;
+    users = await this.userService.findAll();
+    for (const user of users) {
+      ret.push({ userId: user.userId, username: user.username });
     }
+
+    return ret;
+  }
 
   @Get(':userId')
   async fetch(@Param('userId') userId: number) {
