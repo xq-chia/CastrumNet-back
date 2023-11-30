@@ -1,8 +1,9 @@
 import { AuthService } from './auth.service';
-import { Body, Controller, HttpCode, HttpStatus, Post } from '@nestjs/common';
+import { Body, Controller, HttpCode, HttpStatus, Post, UseInterceptors } from '@nestjs/common';
 import { LoginDto } from '../dto/login-auth.dto';
 import { UsersService } from 'src/users/users.service';
 import { User } from 'src/entity/user.entity';
+import { TransformInterceptor } from 'src/interceptor/transform/transform.interceptor';
 
 @Controller('auth')
 export class AuthController {
@@ -12,6 +13,7 @@ export class AuthController {
   ) {}
 
   @HttpCode(HttpStatus.OK)
+  @UseInterceptors(TransformInterceptor)
   @Post('login')
   async login(@Body() loginDto: LoginDto) {
     let res: any;
