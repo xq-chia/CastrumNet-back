@@ -8,7 +8,7 @@ import { HostService } from 'src/host/host.service';
 
 @Module({
   imports: [DbModule],
-  providers: [RoleAssignmentService, UsersService, UserHostService, HostService],
+  providers: [RoleAssignmentService, UsersService],
   exports: [RoleAssignmentService],
   controllers: [RoleAssignmentController]
 })
