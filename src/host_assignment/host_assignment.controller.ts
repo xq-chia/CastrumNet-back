@@ -1,11 +1,13 @@
-import { Body, Controller, Get, Param, Patch } from '@nestjs/common';
+import { Body, Controller, Get, Param, Patch, UseInterceptors } from '@nestjs/common';
 import { EditHostAssignmentDto } from 'src/dto/edit-hostAssignment.dto';
 import { User } from 'src/entity/user.entity';
 import { UserHost } from 'src/entity/user_host.entity';
+import { TransformInterceptor } from 'src/interceptor/transform/transform.interceptor';
 import { RoleAssignmentService } from 'src/role_assignment/role_assignment.service';
 import { UserHostService } from 'src/user_host/user_host.service';
 import { UsersService } from 'src/users/users.service';
 
+@UseInterceptors(TransformInterceptor)
 @Controller('hostAssignment')
 export class HostAssignmentController {
     constructor(
