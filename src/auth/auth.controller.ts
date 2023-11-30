@@ -5,6 +5,7 @@ import { UsersService } from 'src/users/users.service';
 import { User } from 'src/entity/user.entity';
 import { TransformInterceptor } from 'src/interceptor/transform/transform.interceptor';
 
+@UseInterceptors(TransformInterceptor)
 @Controller('auth')
 export class AuthController {
   constructor(
@@ -13,7 +14,6 @@ export class AuthController {
   ) {}
 
   @HttpCode(HttpStatus.OK)
-  @UseInterceptors(TransformInterceptor)
   @Post('login')
   async login(@Body() loginDto: LoginDto) {
     let res: any;
