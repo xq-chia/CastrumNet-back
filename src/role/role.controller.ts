@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post, UseInterceptors } from '@nestjs/common';
 import { RoleService } from './role.service';
 import { Role } from 'src/entity/role.entity';
 import { CreateRoleDto } from 'src/dto/create-role.dto';
@@ -7,7 +7,9 @@ import { RoleInheritance } from 'src/entity/role_inheritance.entity';
 import { PermissionService } from 'src/permission/permission.service';
 import { Permission } from 'src/entity/permission.entity';
 import { EditRoleDto } from 'src/dto/edit-role.dto';
+import { TransformInterceptor } from 'src/interceptor/transform/transform.interceptor';
 
+@UseInterceptors(TransformInterceptor)
 @Controller('role')
 export class RoleController {
     constructor(
