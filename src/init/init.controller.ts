@@ -1,8 +1,10 @@
-import { Controller, Get, Headers, Req } from '@nestjs/common';
+import { Controller, Get, Headers, Req, UseInterceptors } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { User } from 'src/entity/user.entity';
+import { TransformInterceptor } from 'src/interceptor/transform/transform.interceptor';
 import { UsersService } from 'src/users/users.service';
 
+@UseInterceptors(TransformInterceptor)
 @Controller('init')
 export class InitController {
   constructor(
