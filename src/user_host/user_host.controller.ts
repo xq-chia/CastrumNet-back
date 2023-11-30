@@ -4,8 +4,9 @@ import { UserHost } from 'src/entity/user_host.entity';
 import { Host } from 'src/entity/host.entity';
 import { HostService } from 'src/host/host.service';
 import { TransformInterceptor } from 'src/interceptor/transform/transform.interceptor';
+import { AccountingInterceptor } from 'src/interceptor/accounting/accounting.interceptor';
 
-@UseInterceptors(TransformInterceptor)
+@UseInterceptors(AccountingInterceptor, TransformInterceptor)
 @Controller('userHost')
 export class UserHostController {
     constructor(

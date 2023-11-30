@@ -9,8 +9,9 @@ import { UserHostService } from 'src/user_host/user_host.service';
 import { UserHost } from 'src/entity/user_host.entity';
 import { Host } from 'src/entity/host.entity';
 import { HostService } from 'src/host/host.service';
+import { AccountingInterceptor } from 'src/interceptor/accounting/accounting.interceptor';
 
-@UseInterceptors(TransformInterceptor)
+@UseInterceptors(AccountingInterceptor, TransformInterceptor)
 @Controller('roleAssignment')
 export class RoleAssignmentController {
   constructor(

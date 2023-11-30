@@ -8,8 +8,9 @@ import { PermissionService } from 'src/permission/permission.service';
 import { Permission } from 'src/entity/permission.entity';
 import { EditRoleDto } from 'src/dto/edit-role.dto';
 import { TransformInterceptor } from 'src/interceptor/transform/transform.interceptor';
+import { AccountingInterceptor } from 'src/interceptor/accounting/accounting.interceptor';
 
-@UseInterceptors(TransformInterceptor)
+@UseInterceptors(AccountingInterceptor, TransformInterceptor)
 @Controller('role')
 export class RoleController {
     constructor(

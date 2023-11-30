@@ -4,8 +4,9 @@ import { LoginDto } from '../dto/login-auth.dto';
 import { UsersService } from 'src/users/users.service';
 import { User } from 'src/entity/user.entity';
 import { TransformInterceptor } from 'src/interceptor/transform/transform.interceptor';
+import { AccountingInterceptor } from 'src/interceptor/accounting/accounting.interceptor';
 
-@UseInterceptors(TransformInterceptor)
+@UseInterceptors(AccountingInterceptor, TransformInterceptor)
 @Controller('auth')
 export class AuthController {
   constructor(

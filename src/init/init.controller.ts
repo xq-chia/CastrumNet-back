@@ -3,8 +3,9 @@ import { JwtService } from '@nestjs/jwt';
 import { User } from 'src/entity/user.entity';
 import { TransformInterceptor } from 'src/interceptor/transform/transform.interceptor';
 import { UsersService } from 'src/users/users.service';
+import { AccountingInterceptor } from 'src/interceptor/accounting/accounting.interceptor';
 
-@UseInterceptors(TransformInterceptor)
+@UseInterceptors(AccountingInterceptor, TransformInterceptor)
 @Controller('init')
 export class InitController {
   constructor(

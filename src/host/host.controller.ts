@@ -5,8 +5,9 @@ import { Host } from 'src/entity/host.entity';
 import { TestConnHostDto } from 'src/dto/testConn-host.dto';
 import { EditHostDto } from 'src/dto/edit-host.dto';
 import { TransformInterceptor } from 'src/interceptor/transform/transform.interceptor';
+import { AccountingInterceptor } from 'src/interceptor/accounting/accounting.interceptor';
 
-@UseInterceptors(TransformInterceptor)
+@UseInterceptors(AccountingInterceptor, TransformInterceptor)
 @Controller('host')
 export class HostController {
     constructor(private hostService: HostService) {}
