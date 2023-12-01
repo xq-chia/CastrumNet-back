@@ -28,7 +28,7 @@ export class AccountingInterceptor implements NestInterceptor {
           this.log(`[RES] ACCEPTED ${JSON.stringify(data)}`);
         },
         error: (err) => {
-          this.log(`[RES] REJECTED ${err.status} ${err.name} ${err.message} ${err.response.error}`);
+          this.log(`[RES] REJECTED ${err.status} ${err.message} ${err.description}`);
         }
       })
     );
