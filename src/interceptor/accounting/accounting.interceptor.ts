@@ -20,7 +20,6 @@ export class AccountingInterceptor implements NestInterceptor {
 
       let line = `[REQ] ${time} ${method} ${url} ${query} ${body} ${params} ${token}`;
 
-      console.log('test')
       this.log(line);
     }
     return next.handle().pipe(
