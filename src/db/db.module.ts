@@ -2,7 +2,7 @@ import { Module } from '@nestjs/common';
 import { createPool } from 'mariadb';
 
 const pool = createPool({
-  host: 'localhost',
+  host: '127.0.0.1',
   user: 'fyp',
   password: 'xq010614chia',
   database: 'fyp',
