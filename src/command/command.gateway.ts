@@ -5,6 +5,7 @@ import { Server } from 'socket.io';
 import { RbacService } from 'src/rbac/rbac.service';
 import { HostService } from 'src/host/host.service';
 import { Host } from 'src/entity/host.entity';
+import { LoggerService } from 'src/logger/logger.service';
 
 @WebSocketGateway({ cors: true })
 export class CommandGateway implements OnGatewayInit {
@@ -18,7 +19,8 @@ export class CommandGateway implements OnGatewayInit {
 
   constructor(
     private rbacService: RbacService,
-    private hostService: HostService
+    private hostService: HostService,
+    private loggerSrv: LoggerService
     ) { }
 
   afterInit(server: Server) {
@@ -48,11 +50,15 @@ export class CommandGateway implements OnGatewayInit {
   handleMessage(@MessageBody() message: string) {
     // enter
     if (message == '\u000d' && this.buffer && this.ptyProcess.process == 'bash') {
+      let time = new Date().toLocaleString('en-GB', { timeZone: 'Asia/Kuala_Lumpur', });
+      this.loggerSrv.logWs(`[REQ] ${time} ${this.buffer}`)
       if (!this.rbacService.checkPermission(this.buffer)) {
         this.server.emit('error', 'You do not have the permission to execute the command');
         this.clearBuffer();
+        this.loggerSrv.logWs('[RES] REJECTED')
         return ;
       }
+      this.loggerSrv.logWs('[RES] ACCEPTED')
     }
     this.ptyProcess.write(message);
   }
