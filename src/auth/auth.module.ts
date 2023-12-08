@@ -6,6 +6,7 @@ import { jwtConstants } from "../constants/jwt.constant";
 import { JwtModule } from "@nestjs/jwt";
 import { DbModule } from 'src/db/db.module';
 import { TenantsModule } from 'src/tenants/tenants.module';
+import { LoggerService } from 'src/logger/logger.service';
 
 @Module({
   imports: [
@@ -19,6 +20,6 @@ import { TenantsModule } from 'src/tenants/tenants.module';
     DbModule
   ],
   controllers: [AuthController],
-  providers: [AuthService]
+  providers: [AuthService, LoggerService]
 })
 export class AuthModule {}
