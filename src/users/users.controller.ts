@@ -75,6 +75,7 @@ export class UsersController {
       createDto.lastName,
       true,
       createDto.tenantId,
+      0
     );
 
     userId = await this.usersService.save(user);

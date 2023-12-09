@@ -6,8 +6,9 @@ export class User {
   lastName: string;
   status: boolean;
   tenantId: number;
+  loginAttempt: number;
 
-  constructor (username: string, password: string, firstName: string, lastName: string, status: boolean, tenantId: number, userId?: number) {
+  constructor (username: string, password: string, firstName: string, lastName: string, status: boolean, tenantId: number, userId?: number, loginAttempt?: number) {
     this.userId = userId;
     this.username = username;
     this.password = password;
@@ -15,5 +16,6 @@ export class User {
     this.lastName = lastName;
     this.status = status;
     this.tenantId = tenantId;
+    this.loginAttempt = loginAttempt;
   }
 }
