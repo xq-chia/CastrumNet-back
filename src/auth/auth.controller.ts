@@ -1,12 +1,14 @@
 import { AuthService } from './auth.service';
-import { Body, Controller, HttpCode, HttpStatus, Post, UseInterceptors } from '@nestjs/common';
+import { Body, Controller, HttpCode, HttpStatus, Post, UseFilters, UseInterceptors } from '@nestjs/common';
 import { LoginDto } from '../dto/login-auth.dto';
 import { UsersService } from 'src/users/users.service';
 import { User } from 'src/entity/user.entity';
 import { TransformInterceptor } from 'src/interceptor/transform/transform.interceptor';
 import { AccountingInterceptor } from 'src/interceptor/accounting/accounting.interceptor';
+import { GenericExceptionFilter } from 'src/filter/generic-exception/generic-exception.filter';
 
 @UseInterceptors(AccountingInterceptor, TransformInterceptor)
+@UseFilters(GenericExceptionFilter)
 @Controller('auth')
 export class AuthController {
   constructor(
@@ -20,9 +22,8 @@ export class AuthController {
     let res: any;
     let token: string;
 
-    token = await this.authService.login(loginDto.username, loginDto.password);
+      token = await this.authService.login(loginDto.username, loginDto.password);
 
-    if (token) {
       let user: User;
       let time: number;
 
@@ -30,19 +31,17 @@ export class AuthController {
       time = new Date().getTime();
 
       res = {
-        msg: 'ok',
+        msg: `Authenticated. Welcome back ${user.firstName}`,
         user: {
           token: token,
-          name:  user.firstName + ' ' + user.lastName,
+          name: user.firstName + ' ' + user.lastName,
           email: user.username,
           id: user.userId,
           time: time,
           expired: time + 1000 * 60 * 5,
         },
       };
-    } else {
-      res = { msg: 'Incorrect username or password' };
-    }
-    return res;
+
+      return res;
   }
 }

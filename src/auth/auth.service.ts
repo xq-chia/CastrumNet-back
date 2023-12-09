@@ -1,4 +1,4 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { UsersService } from './../users/users.service';
 import { TenantsService } from "../tenants/tenants.service";
@@ -19,25 +19,72 @@ export class AuthService {
 
     user = await this.authenticate(username, password);
 
-    if (user) {
-      return this.signToken(user);
-    } else {
-      return null;
-    }
+    return this.signToken(user);
   }
 
   private async authenticate(
     username: string,
     password: string,
-  ): Promise<User | null> {
+  ): Promise<User> {
     let user: User;
 
     user = await this.usersService.findOneByUsername(username);
 
+    // user not found
+    if (!user) {
+      throw new HttpException(
+        'Invalid username or password',
+        HttpStatus.UNAUTHORIZED,
+        {
+          description: 'username not found',
+        },
+      );
+    }
+
+    // frozen account
+    if (!user.status) {
+      throw new HttpException(
+        'This account has been frozen',
+        HttpStatus.UNAUTHORIZED,
+        {
+          description: 'frozen account',
+        },
+      );
+    }
+
+    // authenticated
     if (user.username == username && user.password == password) {
+      // reset login attempt
+      user.loginAttempt = 0;
+      this.usersService.update(user);
+
       return user;
+      // wrong credential
     } else {
-      return null;
+      this.checkLoginAttempt(user);
+      // increment login attempt
+      user.loginAttempt += 1;
+      this.usersService.update(user);
+      throw new HttpException(
+        'Invalid username or password',
+        HttpStatus.UNAUTHORIZED,
+        {
+          description: 'wrong password',
+        },
+      );
+    }
+  }
+
+  private checkLoginAttempt(user: User) {
+    if (user.loginAttempt == 3) {
+      this.usersService.toggleStatus(user.userId);
+      throw new HttpException(
+        'Account frozen due to too many login attempts',
+        HttpStatus.UNAUTHORIZED,
+        {
+          description: 'brute force detected',
+        },
+      );
     }
   }
 

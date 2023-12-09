@@ -12,8 +12,12 @@ export class UsersService {
     let sql: string;
     let sqlResult: any;
 
-    sql = 'UPDATE user SET username = ?, password = ?, firstName = ?, lastName = ?, tenantId = ?, status = ? WHERE userId = ?';
-    sqlResult = await this.connection.query(sql, [user.username, user.password, user.firstName, user.lastName, user.tenantId, user.status, user.userId]);
+    if (user.loginAttempt == undefined) {
+      user.loginAttempt = 0
+    }
+
+    sql = 'UPDATE user SET username = ?, password = ?, firstName = ?, lastName = ?, tenantId = ?, status = ?, loginAttempt = ? WHERE userId = ?';
+    sqlResult = await this.connection.query(sql, [user.username, user.password, user.firstName, user.lastName, user.tenantId, user.status, user.loginAttempt, user.userId]);
 
     if (sqlResult.affectedRows == 1) {
       return true;
