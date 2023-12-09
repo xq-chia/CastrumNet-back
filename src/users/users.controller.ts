@@ -97,7 +97,7 @@ export class UsersController {
 
   @Patch('freeze/:userId')
   async freeze(@Param('userId') userId: number) {
-    return await this.usersService.updateStatus(userId);
+    return await this.usersService.toggleStatus(userId);
   }
 
   @Delete(':userId')
