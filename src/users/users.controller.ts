@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post, UseInterceptors } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpException, Param, Patch, Post, UnauthorizedException, UseInterceptors } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateDto } from 'src/dto/create-users.dto';
 import { User } from 'src/entity/user.entity';
@@ -95,9 +95,22 @@ export class UsersController {
     this.usersService.update(user);
   }
 
-  @Patch('freeze/:userId')
+  @Patch('status/:userId')
   async freeze(@Param('userId') userId: number) {
-    return await this.usersService.toggleStatus(userId);
+    let user: User;
+    let msg: string;
+
+    await this.usersService.toggleStatus(userId);
+    
+    user = await this.usersService.findOneById(userId);
+
+    if (user.status) {
+      msg = 'The user has been activated'
+    } else {
+      msg = 'The user has been deactivated'
+    }
+
+    return { msg };
   }
 
   @Delete(':userId')
