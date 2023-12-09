@@ -1,4 +1,4 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Inject, Injectable } from '@nestjs/common';
 import { User } from '../entity/user.entity';
 import { Connection } from 'mariadb';
 
@@ -8,7 +8,7 @@ export class UsersService {
     @Inject('DATABASE_CONNECTION') private connection: Connection
   ) {}
 
-  async update(user: User) {
+  async update(user: User): Promise<boolean> {
     let sql: string;
     let sqlResult: any;
 
@@ -18,21 +18,25 @@ export class UsersService {
     if (sqlResult.affectedRows == 1) {
       return true;
     } else {
-      return false;
+      throw new HttpException('User update failed', HttpStatus.BAD_REQUEST, {
+        description: 'user is not edited'
+      })
     }
   }
 
-  async updateStatus(userId: number) {
+  async toggleStatus(userId: number): Promise<boolean> {
     let sql: string;
     let sqlResult: any;
 
-    sql = 'UPDATE user SET status = 0 WHERE userId = ?';
+    sql = 'UPDATE user SET status = !status WHERE userId = ?';
     sqlResult = await this.connection.query(sql, [userId]);
 
     if (sqlResult.affectedRows == 1) {
       return true;
     } else {
-      return false;
+      throw new HttpException('Status update failed', HttpStatus.BAD_REQUEST, {
+        description: 'status column is not updated'
+      })
     }
   }
 
@@ -40,13 +44,13 @@ export class UsersService {
     let sql: string;
     let sqlResult: any;
 
-    sql = 'INSERT INTO user (username, password, firstName, lastName, tenantId, status) VALUES (?, ?, ?, ?, ?, ?) RETURNING userId';
+    sql = 'INSERT INTO user (username, password, firstName, lastName, tenantId, status) VALUES (?, ?, ?, ?, ?, ?)';
     sqlResult = await this.connection.query(sql, [user.username, user.password, user.firstName, user.lastName, user.tenantId, 1])
 
-    return sqlResult[0].userId
+    return sqlResult.insertId
   }
 
-  async findAll() {
+  async findAll(): Promise<User[]> {
     let sql: string;
     let users: User[] = [];
     let sqlResult: any;
@@ -65,33 +69,41 @@ export class UsersService {
     return users;
   }
 
-  async findOneByUsername(username: string): Promise<User | undefined> {
+  async findOneByUsername(username: string): Promise<User | null> {
     let sql: string;
-    let user: User;
+    let user: User = null;
     let sqlResult: any;
 
     sql = 'SELECT * FROM user WHERE username = ?';
+    sqlResult = await this.connection.query(sql, [username]);
 
-    sqlResult = (await this.connection.query(sql, [username]))[0];
-    user = new User(sqlResult.username, sqlResult.password, sqlResult.firstName, sqlResult.lastName, !!sqlResult.status, sqlResult.tenantId, sqlResult.userId, sqlResult.loginAttempt);
+    if (sqlResult.length != 0) {
+      let row: any;
+      row = sqlResult[0];
+      user = new User(row.username, row.password, row.firstName, row.lastName, !!row.status, row.tenantId, row.userId, row.loginAttempt);
+    }
 
     return user;
   }
 
-  async findOneById(id: number): Promise<User | undefined> {
+  async findOneById(id: number): Promise<User | null> {
     let sql: string;
-    let user: User;
+    let user: User = null;
     let sqlResult: any;
 
     sql = 'SELECT * FROM user WHERE userId = ?';
+    sqlResult = await this.connection.query(sql, [id]);
 
-    sqlResult = (await this.connection.query(sql, [id]))[0];
-    user = new User(sqlResult.username, sqlResult.password, sqlResult.firstName, sqlResult.lastName, !!sqlResult.status, sqlResult.tenantId, sqlResult.userId, sqlResult.loginAttempt)
+    if (sqlResult.length != 0) {
+      let row: any;
+      row = sqlResult[0];
+      user = new User(row.username, row.password, row.firstName, row.lastName, !!row.status, row.tenantId, row.userId, row.loginAttempt);
+    }
 
     return user;
   }
 
-  async deleteByUserId(userId: number) {
+  async deleteByUserId(userId: number): Promise<boolean> {
     let sql: string;
     let sqlResult: any;
 
@@ -101,7 +113,9 @@ export class UsersService {
     if (sqlResult.affectedRows == 1) {
       return true;
     } else {
-      return false;
+      throw new HttpException('Deletion failed', HttpStatus.BAD_REQUEST, {
+        description: 'user are not deleted'
+      });
     }
   }
 }
