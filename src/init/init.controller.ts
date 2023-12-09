@@ -14,12 +14,11 @@ export class InitController {
   ) {}
 
   @Get('app')
-  async init(@Headers('authorization') token: string) {
+  async init(@Headers('token') token: string) {
     let clearToken: any;
     let res: any;
     let user: User;
 
-    token = token.split(' ')[1]
     clearToken = this.jwtService.decode(token);
 
     if (token) {
