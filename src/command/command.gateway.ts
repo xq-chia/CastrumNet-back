@@ -6,6 +6,8 @@ import { RbacService } from 'src/rbac/rbac.service';
 import { HostService } from 'src/host/host.service';
 import { Host } from 'src/entity/host.entity';
 import { LoggerService } from 'src/logger/logger.service';
+import { UserHostService } from 'src/user_host/user_host.service';
+import { UserHost } from 'src/entity/user_host.entity';
 
 @WebSocketGateway({ cors: true })
 export class CommandGateway implements OnGatewayInit {
@@ -16,11 +18,13 @@ export class CommandGateway implements OnGatewayInit {
   })
   buffer: string = '';
   @WebSocketServer() server: Server;
+  userHost: UserHost;
 
   constructor(
     private rbacService: RbacService,
     private hostService: HostService,
-    private loggerSrv: LoggerService
+    private loggerSrv: LoggerService,
+    private userHostService: UserHostService
     ) { }
 
   afterInit(server: Server) {
@@ -30,9 +34,12 @@ export class CommandGateway implements OnGatewayInit {
   }
 
   @SubscribeMessage('init')
-  async handleInit(@MessageBody() hostId: number) {
+  async handleInit(@MessageBody() userHostId: number) {
     let host: Host;
+    let hostId: number;
 
+    this.userHost = await this.userHostService.findOneByUserHostId(userHostId);
+    hostId = this.userHost.hostId;
     host = await this.hostService.findOneByHostId(hostId)
 
     this.ptyProcess.write(`ssh zachia-dev@${host.ipAddress}`)
@@ -47,12 +54,12 @@ export class CommandGateway implements OnGatewayInit {
   }
 
   @SubscribeMessage('message')
-  handleMessage(@MessageBody() message: string) {
+  async handleMessage(@MessageBody() message: string) {
     // enter
     if (message == '\u000d' && this.buffer && this.ptyProcess.process == 'bash') {
       let time = new Date().toLocaleString('en-GB', { timeZone: 'Asia/Kuala_Lumpur', });
       this.loggerSrv.logWs(`[REQ] ${time} ${this.buffer}`)
-      if (!this.rbacService.checkPermission(this.buffer)) {
+      if (!await this.rbacService.checkPermission(this.buffer, this.userHost.userHostId)) {
         this.server.emit('error', 'You do not have the permission to execute the command');
         this.clearBuffer();
         this.loggerSrv.logWs('[RES] REJECTED')

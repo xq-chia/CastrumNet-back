@@ -20,6 +20,23 @@ export class UserHostService {
     }
   }
 
+  async findOneByUserHostId(userHostId: number): Promise<UserHost> {
+    let sql: string;
+    let userHost: UserHost = null;
+    let sqlResult: any;
+
+    sql = 'SELECT * FROM user_host WHERE userHostId = ?';
+    sqlResult = await this.connection.query(sql, [userHostId]);
+
+    if (sqlResult.length != 0) {
+      let row: any;
+      row = sqlResult[0];
+      userHost = new UserHost(row.userId, row.hostId, row.userHostId);
+    }
+
+    return userHost;
+  }
+
   async findAllByUserId(userId: number): Promise<UserHost[]> {
     let sql: string;
     let sqlResult: any;
