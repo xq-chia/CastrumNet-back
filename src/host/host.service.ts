@@ -1,4 +1,4 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Inject, Injectable } from '@nestjs/common';
 import { Connection } from 'mariadb';
 import { Host } from 'src/entity/host.entity';
 import { NodeSSH } from 'node-ssh';
@@ -11,18 +11,14 @@ export class HostService {
     @Inject('DATABASE_CONNECTION') private connection: Connection,
   ) {}
 
-  async save(host: Host): Promise<boolean> {
+  async save(host: Host): Promise<number> {
     let sql: string;
     let sqlResult: any;
 
     sql = 'INSERT INTO host (host, ipAddress) VALUES (?, ?)';
     sqlResult = await this.connection.query(sql, [host.host, host.ipAddress])
 
-    if (sqlResult.affectedRow == 1) {
-      return true;
-    } else {
-      return false;
-    }
+    return sqlResult.insertId
   }
 
   async findAll() {
@@ -33,13 +29,11 @@ export class HostService {
     sql = 'SELECT * FROM host';
 
     sqlResult = await this.connection.query(sql);
-    sqlResult.forEach(row => {
+    for (const row of sqlResult) {
       let host: Host;
-
       host = new Host(row.host, row.ipAddress, row.hostId)
-
       hosts.push(host)
-    });
+    }
 
     return hosts;
   }
@@ -51,8 +45,12 @@ export class HostService {
 
     sql = 'SELECT * FROM host WHERE hostId = ?';
 
-    sqlResult = (await this.connection.query(sql, [hostId]))[0];
-    host = new Host(sqlResult.host, sqlResult.ipAddress, sqlResult.hostId)
+    sqlResult = (await this.connection.query(sql, [hostId]));
+    if (sqlResult.lenth != 0) {
+      let row: any;
+      row = sqlResult[0];
+      host = new Host(row.host, row.ipAddress, row.hostId)
+    }
 
     return host;
   }
@@ -67,7 +65,9 @@ export class HostService {
     if (sqlResult.affectedRows == 1) {
       return true;
     } else {
-      return false;
+      throw new HttpException('Host update failed', HttpStatus.BAD_REQUEST, {
+        description: 'host is not edited'
+      })
     }
   }
 
@@ -95,7 +95,9 @@ export class HostService {
     if (sqlResult.affectedRows == 1) {
       return true;
     } else {
-      return false;
+      throw new HttpException('Deletion failed', HttpStatus.BAD_REQUEST, {
+        description: 'host are not deleted'
+      });
     }
   }
 }
