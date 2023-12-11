@@ -1,4 +1,4 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Inject, Injectable } from '@nestjs/common';
 import { Connection } from 'mariadb';
 import { Role } from 'src/entity/role.entity';
 
@@ -10,10 +10,10 @@ export class RoleService {
     let sql: string;
     let sqlResult: any;
 
-    sql = 'INSERT INTO role (role, description) VALUES (?, ?) RETURNING roleId';
+    sql = 'INSERT INTO role (role, description) VALUES (?, ?)';
     sqlResult = await this.connection.query(sql, [role.role, role.description])
 
-    return sqlResult[0].roleId
+    return sqlResult.insertId;
   }
 
   async update(role: Role) {
@@ -26,7 +26,9 @@ export class RoleService {
     if (sqlResult.affectedRows == 1) {
       return true;
     } else {
-      return false;
+      throw new HttpException('Role update failed', HttpStatus.BAD_REQUEST , {
+        description: 'role is not edited'
+      })
     }
 
   }
@@ -39,13 +41,11 @@ export class RoleService {
     sql = 'SELECT * FROM role';
 
     sqlResult = await this.connection.query(sql);
-    sqlResult.forEach(row => {
+    for (const row of sqlResult) {
       let role: Role;
-
       role = new Role(row.role, row.description, row.roleId);
-
       roles.push(role);
-    });
+    }
 
     return roles;
   }
@@ -57,8 +57,13 @@ export class RoleService {
 
     sql = 'SELECT * FROM role WHERE roleId = ?';
 
-    sqlResult = (await this.connection.query(sql, [roleId]))[0];
-    role = new Role(sqlResult.role, sqlResult.description, sqlResult.roleId);
+    sqlResult = (await this.connection.query(sql, [roleId]));
+
+    if (sqlResult.length != 0) {
+      let row: any;
+      row = sqlResult[0];
+      role = new Role(row.role, row.description, row.roleId);
+    }
 
     return role;
   }
@@ -73,7 +78,9 @@ export class RoleService {
     if (sqlResult.affectedRows == 1) {
       return true;
     } else {
-      return false;
+      throw new HttpException('Deletion failed', HttpStatus.BAD_REQUEST, {
+        description: 'role are not deleted'
+      });
     }
   }
 }
