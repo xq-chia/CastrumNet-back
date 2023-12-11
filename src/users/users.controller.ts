@@ -91,7 +91,7 @@ export class UsersController {
     }
     
     return {
-      msg: `Successfully edited user ${userId}`
+      msg: `Successfully created user ${userId}`
     }
   }
 
