@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, HttpException, Param, Patch, Post, UnauthorizedException, UseInterceptors } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpException, HttpStatus, Param, Patch, Post, UnauthorizedException, UseFilters, UseInterceptors } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateDto } from 'src/dto/create-users.dto';
 import { User } from 'src/entity/user.entity';
@@ -13,8 +13,10 @@ import { RoleAssignment } from 'src/entity/role_assignment.entity';
 import { RoleAssignmentService } from 'src/role_assignment/role_assignment.service';
 import { TransformInterceptor } from 'src/interceptor/transform/transform.interceptor';
 import { AccountingInterceptor } from 'src/interceptor/accounting/accounting.interceptor';
+import { GenericExceptionFilter } from 'src/filter/generic-exception/generic-exception.filter';
 
 @UseInterceptors(AccountingInterceptor, TransformInterceptor)
+@UseFilters(GenericExceptionFilter)
 @Controller('users')
 export class UsersController {
   constructor(
@@ -26,8 +28,15 @@ export class UsersController {
   ) {}
 
   @Get()
-  fetchAll(): Promise<User[]> {
-    return this.usersService.findAll();
+  async fetchAll(): Promise<any> {
+    let users: User[];
+
+    users = await this.usersService.findAll();
+
+    return { 
+      msg: 'Successfully fetched all users',
+      users
+    }
   }
 
   @Get(':userId')
@@ -36,7 +45,6 @@ export class UsersController {
     let tenant: Tenant;
     let userHosts: UserHost[] = [];
     let roleAssignments: any[] = [];
-    let ret: any;
 
     user = await this.usersService.findOneById(userId);
     tenant = await this.tenantsService.findOneById(user.tenantId);
@@ -53,14 +61,13 @@ export class UsersController {
       roleAssignments.push({ host: host.host, ipAddress: host.ipAddress, userHostId: userHost.userHostId, roleIds: roleIds });
     }
 
-    ret = {
-      user: user,
-      tenant: tenant,
-      userHosts: userHosts,
-      roleAssignments: roleAssignments
-    };
-
-    return ret;
+    return {
+      msg: `Successfully fetched user ${user.userId}`,
+      user,
+      tenant,
+      userHosts,
+      roleAssignments
+    }
   }
 
   @Post()
@@ -82,6 +89,10 @@ export class UsersController {
     for (const hostId of createDto.hostIds) {
       this.userHostService.save(new UserHost(userId, hostId));
     }
+    
+    return {
+      msg: `Successfully edited user ${userId}`
+    }
   }
 
   @Patch(':userId')
@@ -93,6 +104,10 @@ export class UsersController {
     user = new User(dto.username, dto.password, dto.firstName, dto.lastName, dto.status, dto.tenantId, userId)
 
     this.usersService.update(user);
+
+    return {
+      msg: `Successfully edited user ${userId}`
+    }
   }
 
   @Patch('status/:userId')
@@ -104,17 +119,17 @@ export class UsersController {
     
     user = await this.usersService.findOneById(userId);
 
-    if (user.status) {
-      msg = 'The user has been activated'
-    } else {
-      msg = 'The user has been deactivated'
-    }
-
-    return { msg };
+    return {
+      msg: `User ${user.userId} has been ${user.status ? 'activated' : 'deactivated'}`
+    };
   }
 
   @Delete(':userId')
     async delete(@Param('userId') userId: number) {
       await this.usersService.deleteByUserId(userId);
+
+      return {
+        msg: `Successfully deleted user ${userId}`
+      }
     }
 }
