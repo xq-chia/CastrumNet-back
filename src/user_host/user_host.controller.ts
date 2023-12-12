@@ -16,17 +16,17 @@ export class UserHostController {
 
     @Get(':userId')
     async fetch(@Param('userId') userId: number) {
-        let userHosts: UserHost[];
-        let ret: any[] = [];
+        let _userHosts: UserHost[];
+        let workstations: any[] = [];
 
-        userHosts = await this.userHostSrv.findAllByUserId(userId);
+        _userHosts = await this.userHostSrv.findAllByUserId(userId);
 
-        for (const userHost of userHosts) {
+        for (const userHost of _userHosts) {
             let host: Host;
 
             host = await this.hostSrv.findOneByHostId(userHost.hostId);
 
-            ret.push({
+            workstations.push({
                 userId: userHost.userId,
                 userHostId: userHost.userHostId,
                 host: {
@@ -37,6 +37,9 @@ export class UserHostController {
             })
         }
 
-        return ret;
+        return {
+            msg: `Successfully fetched workstation for user ${userId}`,
+            workstations
+        }
     }
 }
