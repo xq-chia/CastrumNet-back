@@ -1,4 +1,4 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Inject, Injectable } from '@nestjs/common';
 import { Permission } from 'src/entity/permission.entity';
 import { Connection } from 'mariadb';
 
@@ -13,11 +13,7 @@ export class PermissionService {
     sql = 'INSERT INTO permission (object, allow, roleId) VALUES (?, ?, ?)';
     sqlResult = await this.connection.query(sql, [permission.object, permission.allow, permission.roleId])
 
-    if (sqlResult.affectedRows == 1) {
-      return true;
-    } else {
-      return false;
-    }
+    return sqlResult.insertId
   }
 
   async findAllByRoleId(roleId: number): Promise<Permission[]> {
@@ -31,14 +27,9 @@ export class PermissionService {
 
     sqlResult = await this.connection.query(sql, [roleId]);
     for (const row of sqlResult) {
-      permissions.push(
-        new Permission(
-          row.object, 
-          !!row.allow, 
-          row.roleId,
-          row.permId
-        ),
-      );
+      let permission: Permission;
+      permission = new Permission(row.object, !!row.allow, row.roleId, row.permId);
+      permissions.push(permission);
     }
 
     return permissions;
@@ -55,14 +46,9 @@ export class PermissionService {
 
     sqlResult = await this.connection.query(sql, [object]);
     for (const row of sqlResult) {
-      permissions.push(
-        new Permission(
-          row.object, 
-          !!row.allow, 
-          row.roleId,
-          row.permId
-        ),
-      );
+      let permission: Permission;
+      permission = new Permission( row.object, !!row.allow, row.roleId, row.permId);
+      permissions.push(permission);
     }
 
     return permissions;
@@ -75,10 +61,12 @@ export class PermissionService {
     sql = 'DELETE FROM permission WHERE roleId = ?';
     sqlResult = await this.connection.query(sql, [roleId])
 
-    if (sqlResult.affectedRows == 1) {
+    if (sqlResult.affectedRows <= 1) {
       return true;
     } else {
-      return false;
+      throw new HttpException('Deletion failed', HttpStatus.BAD_REQUEST, {
+        description: 'permissions are not deleted'
+      });
     }
   }
 
