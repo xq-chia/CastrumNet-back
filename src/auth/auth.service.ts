@@ -77,9 +77,11 @@ export class AuthService {
 
   private checkLoginAttempt(user: User) {
     if (user.loginAttempt == 3) {
+      user.loginAttempt = 0;
+      this.usersService.update(user);
       this.usersService.toggleStatus(user.userId);
       throw new HttpException(
-        'Account frozen due to too many login attempts',
+        'Too many login attempts. Account frozen',
         HttpStatus.UNAUTHORIZED,
         {
           description: 'brute force detected',
