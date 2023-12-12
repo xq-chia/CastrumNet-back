@@ -23,7 +23,10 @@ export class HostAssignmentController {
 
         userHosts = await this.userHostService.findAllByUserId(userId)
 
-        return { userHosts: userHosts };
+        return {
+            msg: `Succcessfully fetched hosts for user ${userId}`,
+            userHosts
+        };
     }
 
     @Patch('/:userId')
@@ -34,6 +37,9 @@ export class HostAssignmentController {
         await this.userHostService.deleteAllByUserId(userId);
         for (const hostId of dto.hostIds) {
             this.userHostService.save(new UserHost(userId, hostId))
+        }
+        return {
+            msg: `Successfully edited host for user ${userId}`
         }
     }
 }
