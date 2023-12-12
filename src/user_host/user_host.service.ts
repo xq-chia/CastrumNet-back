@@ -1,4 +1,4 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Inject, Injectable } from '@nestjs/common';
 import { Connection } from 'mariadb';
 import { UserHost } from 'src/entity/user_host.entity';
 
@@ -13,11 +13,7 @@ export class UserHostService {
     sql = 'INSERT INTO user_host (userId, hostId) VALUES (?, ?)';
     sqlResult = await this.connection.query(sql, [userHost.userId, userHost.hostId]);
 
-    if (sqlResult.affectedRows == 1) {
-      return true;
-    } else {
-      return false;
-    }
+    return sqlResult.insertId;
   }
 
   async findOneByUserHostId(userHostId: number): Promise<UserHost> {
@@ -67,7 +63,9 @@ export class UserHostService {
     if (sqlResult.affectedRows == 1) {
       return true;
     } else {
-      return false;
+      throw new HttpException('Deletion failed', HttpStatus.BAD_REQUEST, {
+        description: 'userHost is not deleted'
+      });
     }
   }
 
@@ -77,5 +75,13 @@ export class UserHostService {
 
     sql = 'DELETE FROM user_host WHERE userId = ?';
     sqlResult = await this.connection.query(sql, [userId])
+    
+    if (sqlResult.affectedRows <= 1) {
+      return true;
+    } else {
+      throw new HttpException('Deletion failed', HttpStatus.BAD_REQUEST, {
+        description: 'userHosts are not deleted'
+      });
+    }
   }
 }
