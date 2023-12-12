@@ -1,4 +1,4 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Inject, Injectable } from '@nestjs/common';
 import { Connection } from 'mariadb';
 import { RoleInheritance } from 'src/entity/role_inheritance.entity';
 
@@ -13,11 +13,7 @@ export class RoleInheritanceService {
     sql = 'INSERT INTO role_inheritance VALUES (?, ?)';
     sqlResult = await this.connection.query(sql, [role.roleId, role.parentId])
 
-    if (sqlResult.affectedRows == 1) {
-      return true;
-    } else {
-      return false;
-    }
+    return sqlResult.insertId;
   }
 
   async findByRoleId(id: number): Promise<RoleInheritance[] | undefined> {
@@ -46,10 +42,12 @@ export class RoleInheritanceService {
     sql = 'DELETE FROM role_inheritance WHERE roleId = ?';
     sqlResult = await this.connection.query(sql, [roleId])
 
-    if (sqlResult.affectedRows == 1) {
+    if (sqlResult.affectedRows <= 1) {
       return true;
     } else {
-      return false;
+      throw new HttpException('Deletion failed', HttpStatus.BAD_REQUEST, {
+        description: 'roleInheritances are not deleted'
+      });
     }
   }
 
