@@ -40,7 +40,10 @@ export class RoleAssignmentController {
       roleAssignments.push({ host: host.host, ipAddress: host.ipAddress, userHostId: userHost.userHostId, roleIds: roleIds });
     }
 
-    return { roleAssignments };
+    return {
+      msg: 'Successfully fetched all role assignments',
+      roleAssignments
+    };
   }
 
   @Patch()
@@ -51,5 +54,8 @@ export class RoleAssignmentController {
               this.roleAssignmentService.save(new RoleAssignment(roleAssignment.userHostId, roleId));
           }
       }
+    return {
+      msg: `Successfully edited role assignment for user ${dto.userId}`
+    }
   }
 }
