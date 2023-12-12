@@ -13,27 +13,53 @@ export class HostController {
     constructor(private hostService: HostService) {}
 
     @Get()
-    fetchAll() {
-        return this.hostService.findAll()
+    async fetchAll() {
+        let hosts: Host[];
+
+        hosts = await this.hostService.findAll();
+
+        return {
+            msg: 'Successfully fetched all hosts',
+            hosts
+        }
     }
 
     @Get(':hostId')
-    fetch(@Param('hostId') hostId: number) {
-        return this.hostService.findOneByHostId(hostId);
+    async fetch(@Param('hostId') hostId: number) {
+        let host: Host;
+
+        host = await this.hostService.findOneByHostId(hostId)
+
+        return {
+            msg: `Successfully fetched host ${hostId}`,
+            host
+        }
     }
 
     @Post()
     async save(@Body() dto: CreateHostDto) {
         let host: Host;
+        let hostId: number;
 
         host = new Host(dto.host, dto.ipAddress)
 
-        await this.hostService.save(host);
+        hostId = await this.hostService.save(host);
+
+        return {
+            msg: `Successfully created host ${hostId}`
+        }
     }
 
     @Post('testConn')
     async testConn(@Body() dto: TestConnHostDto) {
-        return { isUp: await this.hostService.testConn(dto.ipAddress) };
+        let isUp: boolean;
+
+        isUp = await this.hostService.testConn(dto.ipAddress);
+
+        return {
+            msg: `SSH connection to ${dto.ipAddress} ${isUp ? 'success' : 'failed' }`,
+            isUp
+        };
     }
 
     @Patch(':hostId')
@@ -43,10 +69,18 @@ export class HostController {
         host = new Host(dto.host, dto.ipAddress, hostId);
 
         await this.hostService.update(host);
+
+        return {
+            msg: `Successfully edited host ${hostId}`
+        }
     }
 
     @Delete(':hostId')
     delete(@Param('hostId') hostId: number) {
         this.hostService.deleteByHostId(hostId);
+
+        return {
+            msg: `Successfully deleted host ${hostId}`
+        }
     }
 }
