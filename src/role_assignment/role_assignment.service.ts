@@ -1,4 +1,4 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Inject, Injectable } from '@nestjs/common';
 import { Connection } from 'mariadb';
 import { RoleAssignment } from 'src/entity/role_assignment.entity';
 
@@ -13,11 +13,7 @@ export class RoleAssignmentService {
     sql = 'INSERT INTO role_assignment (userHostId, roleId) VALUES (?, ?)';
     sqlResult = await this.connection.query(sql, [roleAssignment.userHostId, roleAssignment.roleId])
 
-    if (sqlResult.affectedRow == 1) {
-      return true;
-    } else {
-      return false;
-    }
+    return sqlResult.insertId
   }
 
   async findAllByUserHostId(userHostId: number): Promise<RoleAssignment[]> {
@@ -46,5 +42,13 @@ export class RoleAssignmentService {
 
     sql = 'DELETE FROM role_assignment WHERE userHostId = ?';
     sqlResult = await this.connection.query(sql, [userHostId])
+
+    if (sqlResult.affectedRows <= 1) {
+      return true;
+    } else {
+      throw new HttpException('Deletion failed', HttpStatus.BAD_REQUEST, {
+        description: 'role assignments are not deleted'
+      });
+    }
   }
 }
