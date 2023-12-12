@@ -55,7 +55,7 @@ export class RoleAssignmentController {
           }
       }
     return {
-      msg: `Successfully edited role assignment for user ${dto.userId}`
+      msg: `Successfully edited role for user ${dto.userId}`
     }
   }
 }
