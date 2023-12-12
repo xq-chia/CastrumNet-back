@@ -34,8 +34,12 @@ export class TenantsService {
 
     sql = "SELECT * FROM tenant WHERE tenantId = ?";
 
-    sqlResult = (await this.connection.query(sql, [tenantId]))[0];
-    tenant = new Tenant(sqlResult.role, sqlResult.tenantId);
+    sqlResult = await this.connection.query(sql, [tenantId]);
+    if (sqlResult.length != 0) {
+      let row: any;
+      row = sqlResult[0];
+      tenant = new Tenant(row.role, row.tenantId);
+    }
 
     return tenant;
   }
