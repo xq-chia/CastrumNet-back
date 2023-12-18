@@ -5,10 +5,11 @@ import { PermissionService } from 'src/permission/permission.service';
 import { RoleService } from 'src/role/role.service';
 import { RoleInheritanceService } from 'src/role_inheritance/role_inheritance.service';
 import { RoleAssignmentService } from 'src/role_assignment/role_assignment.service';
+import { FileService } from 'src/file/file.service';
 
 @Module({
   imports: [DbModule],
-  providers: [RbacService, PermissionService, RoleService, RoleInheritanceService, RoleAssignmentService],
+  providers: [RbacService, PermissionService, RoleService, RoleInheritanceService, RoleAssignmentService, FileService],
   exports: [RbacService],
 })
 export class RbacModule {}
