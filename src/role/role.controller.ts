@@ -113,6 +113,7 @@ export class RoleController {
         let role: Role;
         let parents: RoleInheritance[] = [];
         let permissions: Permission[] = [];
+        let files: File[] = [];
 
         role = new Role(dto.role, dto.description, dto.roleId)
 
@@ -131,6 +132,13 @@ export class RoleController {
             permissions.push(new Permission(permission.object, !!permission.allow, dto.roleId));
         }
         this.permissionService.updateAllByRoleId(roleId, permissions)
+
+        if (dto.files.length) {
+            for (const file of dto.files) {
+                files.push(new File(file.path, dto.roleId))
+            }
+            this.fileService.updateAllByRoleId(roleId, files);
+        }
 
         return {
             msg: `Successfully edited role ${roleId}`

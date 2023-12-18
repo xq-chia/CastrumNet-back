@@ -1,4 +1,4 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Inject, Injectable } from '@nestjs/common';
 import { Connection } from 'mariadb';
 import { File } from 'src/entity/file.entity';
 
@@ -35,5 +35,27 @@ export class FileService {
     }
 
     return files;
+  }
+
+  async deleteAllByRoleId(roleId: number) {
+    let sql: string;
+    let sqlResult: any;
+
+    sql = 'DELETE FROM file WHERE roleId = ?';
+    try {
+      sqlResult = await this.connection.query(sql, [roleId])
+    } catch (err) {
+      throw new HttpException('Deletion failed', HttpStatus.BAD_REQUEST, {
+        description: 'files are not deleted'
+      });
+    }
+    return true;
+  }
+
+  async updateAllByRoleId(roleId: number, files: File[]) {
+    this.deleteAllByRoleId(roleId);
+    for (const file of files) {
+      this.save(file)
+    }
   }
 }

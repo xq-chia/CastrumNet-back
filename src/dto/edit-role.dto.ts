@@ -1,3 +1,4 @@
+import { File } from "src/entity/file.entity";
 import { Permission } from "src/entity/permission.entity";
 
 export class EditRoleDto {
@@ -6,5 +7,5 @@ export class EditRoleDto {
     description: string;
     parentIds: number[];
     permissions: Permission[];
-
+    files: File[];
 }
