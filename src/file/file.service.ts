@@ -17,4 +17,23 @@ export class FileService {
 
     return sqlResult.insertId
   }
+
+  async findAllByRoleId(roleId: number): Promise<File[]> {
+    let sql: string;
+    let sqlResult: any;
+    let files: File[];
+
+    files = [];
+
+    sql = 'SELECT * FROM file WHERE roleId = ?';
+
+    sqlResult = await this.connection.query(sql, [roleId]);
+    for (const row of sqlResult) {
+      let file: File;
+      file = new File(row.path, row.roleId, row.fileId);
+      files.push(file);
+    }
+
+    return files;
+  }
 }
