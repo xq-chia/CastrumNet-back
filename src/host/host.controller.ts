@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post, UseInterceptors } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post, UseFilters, UseInterceptors } from '@nestjs/common';
 import { HostService } from './host.service';
 import { CreateHostDto } from 'src/dto/create-host.dto';
 import { Host } from 'src/entity/host.entity';
@@ -6,8 +6,10 @@ import { TestConnHostDto } from 'src/dto/testConn-host.dto';
 import { EditHostDto } from 'src/dto/edit-host.dto';
 import { TransformInterceptor } from 'src/interceptor/transform/transform.interceptor';
 import { AccountingInterceptor } from 'src/interceptor/accounting/accounting.interceptor';
+import { GenericExceptionFilter } from 'src/filter/generic-exception/generic-exception.filter';
 
 @UseInterceptors(AccountingInterceptor, TransformInterceptor)
+@UseFilters(GenericExceptionFilter)
 @Controller('host')
 export class HostController {
     constructor(private hostService: HostService) {}

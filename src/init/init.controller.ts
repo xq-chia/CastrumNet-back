@@ -1,11 +1,13 @@
-import { Controller, Get, Headers, Req, UseInterceptors } from '@nestjs/common';
+import { Controller, Get, Headers, Req, UseFilters, UseInterceptors } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { User } from 'src/entity/user.entity';
 import { TransformInterceptor } from 'src/interceptor/transform/transform.interceptor';
 import { UsersService } from 'src/users/users.service';
 import { AccountingInterceptor } from 'src/interceptor/accounting/accounting.interceptor';
+import { GenericExceptionFilter } from 'src/filter/generic-exception/generic-exception.filter';
 
 @UseInterceptors(AccountingInterceptor, TransformInterceptor)
+@UseFilters(GenericExceptionFilter)
 @Controller('init')
 export class InitController {
   constructor(

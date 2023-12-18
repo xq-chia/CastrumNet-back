@@ -1,12 +1,14 @@
-import { Controller, Get, Param, UseInterceptors } from '@nestjs/common';
+import { Controller, Get, Param, UseFilters, UseInterceptors } from '@nestjs/common';
 import { UserHostService } from './user_host.service';
 import { UserHost } from 'src/entity/user_host.entity';
 import { Host } from 'src/entity/host.entity';
 import { HostService } from 'src/host/host.service';
 import { TransformInterceptor } from 'src/interceptor/transform/transform.interceptor';
 import { AccountingInterceptor } from 'src/interceptor/accounting/accounting.interceptor';
+import { GenericExceptionFilter } from 'src/filter/generic-exception/generic-exception.filter';
 
 @UseInterceptors(AccountingInterceptor, TransformInterceptor)
+@UseFilters(GenericExceptionFilter)
 @Controller('userHost')
 export class UserHostController {
     constructor(
