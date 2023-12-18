@@ -61,7 +61,7 @@ export class PermissionService {
     sql = 'DELETE FROM permission WHERE roleId = ?';
     sqlResult = await this.connection.query(sql, [roleId])
 
-    if (sqlResult.affectedRows <= 1) {
+    if (sqlResult.affectedRows >= 1) {
       return true;
     } else {
       throw new HttpException('Deletion failed', HttpStatus.BAD_REQUEST, {

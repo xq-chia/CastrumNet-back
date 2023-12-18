@@ -42,7 +42,7 @@ export class RoleInheritanceService {
     sql = 'DELETE FROM role_inheritance WHERE roleId = ?';
     sqlResult = await this.connection.query(sql, [roleId])
 
-    if (sqlResult.affectedRows <= 1) {
+    if (sqlResult.affectedRows >= 1) {
       return true;
     } else {
       throw new HttpException('Deletion failed', HttpStatus.BAD_REQUEST, {

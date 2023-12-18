@@ -76,7 +76,7 @@ export class UserHostService {
     sql = 'DELETE FROM user_host WHERE userId = ?';
     sqlResult = await this.connection.query(sql, [userId])
     
-    if (sqlResult.affectedRows <= 1) {
+    if (sqlResult.affectedRows >= 1) {
       return true;
     } else {
       throw new HttpException('Deletion failed', HttpStatus.BAD_REQUEST, {

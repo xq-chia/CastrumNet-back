@@ -43,7 +43,7 @@ export class RoleAssignmentService {
     sql = 'DELETE FROM role_assignment WHERE userHostId = ?';
     sqlResult = await this.connection.query(sql, [userHostId])
 
-    if (sqlResult.affectedRows <= 1) {
+    if (sqlResult.affectedRows >= 1) {
       return true;
     } else {
       throw new HttpException('Deletion failed', HttpStatus.BAD_REQUEST, {
