@@ -13,6 +13,7 @@ import { HostModule } from './host/host.module';
 import { UserHostModule } from './user_host/user_host.module';
 import { RoleAssignmentModule } from './role_assignment/role_assignment.module';
 import { HostAssignmentModule } from './host_assignment/host_assignment.module';
+import { FileModule } from './file/file.module';
 
 @Module({
   imports: [
@@ -27,7 +28,8 @@ import { HostAssignmentModule } from './host_assignment/host_assignment.module';
     HostModule, 
     UserHostModule, 
     RoleAssignmentModule, 
-    HostAssignmentModule, 
+    HostAssignmentModule,
+    FileModule, 
   ],
   controllers: [AppController],
   providers: [AppService],

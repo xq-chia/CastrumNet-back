@@ -10,6 +10,8 @@ import { EditRoleDto } from 'src/dto/edit-role.dto';
 import { TransformInterceptor } from 'src/interceptor/transform/transform.interceptor';
 import { AccountingInterceptor } from 'src/interceptor/accounting/accounting.interceptor';
 import { GenericExceptionFilter } from 'src/filter/generic-exception/generic-exception.filter';
+import { FileService } from 'src/file/file.service';
+import { File } from 'src/entity/file.entity';
 
 @UseInterceptors(AccountingInterceptor, TransformInterceptor)
 @UseFilters(GenericExceptionFilter)
@@ -18,7 +20,8 @@ export class RoleController {
     constructor(
         private roleService: RoleService,
         private roleInheritanceService: RoleInheritanceService,
-        private permissionService: PermissionService
+        private permissionService: PermissionService,
+        private fileService: FileService
     ) {}
 
     @Get()
@@ -89,6 +92,12 @@ export class RoleController {
                 permission.allow = false;
             }
             this.permissionService.save(new Permission(permission.object, permission.allow, roleId));
+        }
+
+        if (dto.files.length != 0) {
+            for (const file of dto.files) {
+                this.fileService.save(new File(file.path, roleId));
+            }
         }
 
         return {
