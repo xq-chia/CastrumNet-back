@@ -1,7 +1,8 @@
-import { Body, Controller, Get, Param, Patch, UseInterceptors } from '@nestjs/common';
+import { Body, Controller, Get, Param, Patch, UseFilters, UseInterceptors } from '@nestjs/common';
 import { EditHostAssignmentDto } from 'src/dto/edit-hostAssignment.dto';
 import { User } from 'src/entity/user.entity';
 import { UserHost } from 'src/entity/user_host.entity';
+import { GenericExceptionFilter } from 'src/filter/generic-exception/generic-exception.filter';
 import { AccountingInterceptor } from 'src/interceptor/accounting/accounting.interceptor';
 import { TransformInterceptor } from 'src/interceptor/transform/transform.interceptor';
 import { RoleAssignmentService } from 'src/role_assignment/role_assignment.service';
@@ -9,6 +10,7 @@ import { UserHostService } from 'src/user_host/user_host.service';
 import { UsersService } from 'src/users/users.service';
 
 @UseInterceptors(AccountingInterceptor, TransformInterceptor)
+@UseFilters(GenericExceptionFilter)
 @Controller('hostAssignment')
 export class HostAssignmentController {
     constructor(
@@ -32,7 +34,7 @@ export class HostAssignmentController {
     @Patch('/:userId')
     async edit(@Body() dto: EditHostAssignmentDto, @Param('userId') userId: number) {
         for (const userHost of dto.userHosts) {
-            this.roleAssignmentService.deleteAllByUserHostId(userHost.userHostId);
+            await this.roleAssignmentService.deleteAllByUserHostId(userHost.userHostId);
         }
         await this.userHostService.deleteAllByUserId(userId);
         for (const hostId of dto.hostIds) {

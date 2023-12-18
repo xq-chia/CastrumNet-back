@@ -125,7 +125,7 @@ export class RoleController {
             }
             this.roleInheritanceService.updateAllByRoleId(roleId, parents);
         } else {
-            this.roleInheritanceService.deleteAllByRoleId(roleId);
+            await this.roleInheritanceService.deleteAllByRoleId(roleId);
         }
 
         for (const permission of dto.permissions) {

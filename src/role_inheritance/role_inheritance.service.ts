@@ -52,7 +52,7 @@ export class RoleInheritanceService {
   }
 
   async updateAllByRoleId(roleId: number, roles: RoleInheritance[]) {
-    this.deleteAllByRoleId(roleId);
+    await this.deleteAllByRoleId(roleId);
     for (const role of roles) {
       this.save(role)
     }

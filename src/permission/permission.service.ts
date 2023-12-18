@@ -71,7 +71,7 @@ export class PermissionService {
   }
 
   async updateAllByRoleId(roleId: number, permissions: Permission[]) {
-    this.deleteAllByRoleId(roleId);
+    await this.deleteAllByRoleId(roleId);
     for (const permission of permissions) {
       this.save(permission)
     }

@@ -53,7 +53,7 @@ export class FileService {
   }
 
   async updateAllByRoleId(roleId: number, files: File[]) {
-    this.deleteAllByRoleId(roleId);
+    await this.deleteAllByRoleId(roleId);
     for (const file of files) {
       this.save(file)
     }
