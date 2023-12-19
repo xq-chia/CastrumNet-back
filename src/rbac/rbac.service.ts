@@ -80,16 +80,7 @@ export class RbacService {
       return false;
     }
 
-    bufferList = buffer.split(' ')
-    for (const arg of bufferList) {
-      if (arg.startsWith('$(') && arg.endsWith(')')) {
-        args.push(arg.slice(2, -1));
-      } else if (arg.startsWith('`') && arg.endsWith('`')) {
-        args.push(arg.slice(1, -1));
-      } else {
-        args.push(arg);
-      }
-    }
+    args = this.extractArgs(buffer);
     args = args.filter(arg => !comamnds.includes(arg));
 
     roleAssignments = await this.roleAssignmentSrv.findAllByUserHostId(userHostId)
@@ -123,6 +114,24 @@ export class RbacService {
     }
 
     return true;
+  }
+
+  extractArgs(buffer: string): string[] {
+    let bufferList: string[];
+    let args: string[] = [];
+
+    bufferList = buffer.split(' ');
+    for (const token of bufferList) {
+      if (token.startsWith('$(') && token.endsWith(')')) {
+        args.push(token.slice(2, -1));
+      } else if (token.startsWith('`') && token.endsWith('`')) {
+        args.push(token.slice(1, -1));
+      } else {
+        args.push(token);
+      }
+    }
+
+    return args
   }
 
   extractCommand(buffer: string): string[] {
