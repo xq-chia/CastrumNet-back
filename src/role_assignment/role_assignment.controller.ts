@@ -11,6 +11,9 @@ import { Host } from 'src/entity/host.entity';
 import { HostService } from 'src/host/host.service';
 import { AccountingInterceptor } from 'src/interceptor/accounting/accounting.interceptor';
 import { GenericExceptionFilter } from 'src/filter/generic-exception/generic-exception.filter';
+import { privateDecrypt } from 'crypto';
+import { RoleService } from 'src/role/role.service';
+import { Role } from 'src/entity/role.entity';
 
 @UseInterceptors(AccountingInterceptor, TransformInterceptor)
 @UseFilters(GenericExceptionFilter)
@@ -20,7 +23,9 @@ export class RoleAssignmentController {
       private roleAssignmentService: RoleAssignmentService,
       private userService: UsersService,
       private userHostService: UserHostService,
-      private hostService: HostService
+      private hostService: HostService,
+      private roleSrv: RoleService
+      
   ) {}
 
   @Get(':userId')
@@ -34,12 +39,19 @@ export class RoleAssignmentController {
       let host: Host;
       let _roleAssignments: RoleAssignment[];
       let roleIds: number[];
+      let roles: Role[] = [];
 
       host = await this.hostService.findOneByHostId(userHost.hostId);
       _roleAssignments = await this.roleAssignmentService.findAllByUserHostId(userHost.userHostId);
       roleIds = _roleAssignments.map(val => val.roleId);
 
-      roleAssignments.push({ host: host.host, ipAddress: host.ipAddress, userHostId: userHost.userHostId, roleIds: roleIds });
+      for (const roleId of roleIds) {
+        let role: Role;
+        role = await this.roleSrv.findOneByRoleId(roleId)
+        roles.push(role);
+      }
+
+      roleAssignments.push({ host: host.host, ipAddress: host.ipAddress, userHostId: userHost.userHostId, roleIds: roleIds, roles});
     }
 
     return {
