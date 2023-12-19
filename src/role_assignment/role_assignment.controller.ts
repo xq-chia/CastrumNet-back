@@ -43,7 +43,7 @@ export class RoleAssignmentController {
     }
 
     return {
-      msg: 'Successfully fetched all role assignments',
+      msg: `Successfully fetched role assignments for user ${userId}`,
       roleAssignments
     };
   }
