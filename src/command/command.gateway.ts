@@ -11,11 +11,11 @@ import { UserHost } from 'src/entity/user_host.entity';
 import { Socket, io } from 'socket.io-client';
 
 @WebSocketGateway({ cors: true })
-export class CommandGateway implements OnGatewayInit {
+export class CommandGateway {
   buffer: string = '';
   @WebSocketServer() server: Server;
   userHost: UserHost;
-  ptyProcess: Socket = io('ws://localhost:3001');
+  ptyProcess: Socket;
   process: string = '';
 
   constructor(
@@ -24,13 +24,6 @@ export class CommandGateway implements OnGatewayInit {
     private loggerSrv: LoggerService,
     private userHostService: UserHostService
     ) { }
-
-  afterInit(server: Server) {
-    this.ptyProcess.on('message', data => {
-      this.process = data.process
-      server.send(data.output)
-    })
-  }
 
   @SubscribeMessage('init')
   async handleInit(@MessageBody() userHostId: number) {
@@ -42,6 +35,11 @@ export class CommandGateway implements OnGatewayInit {
     host = await this.hostService.findOneByHostId(hostId)
 
     this.ptyProcess = io(`ws://${host.ipAddress}:3001`)
+    this.ptyProcess.on('message', data => {
+      this.process = data.process
+      this.server.send(data.output)
+    })
+
     // ctrl-l
     this.ptyProcess.send('\u000c')
   }
