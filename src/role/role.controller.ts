@@ -123,7 +123,7 @@ export class RoleController {
             for (const parentId of dto.parentIds) {
                 parents.push(new RoleInheritance(roleId, parentId));
             }
-            this.roleInheritanceService.updateAllByRoleId(roleId, parents);
+            await this.roleInheritanceService.updateAllByRoleId(roleId, parents);
         } else {
             await this.roleInheritanceService.deleteAllByRoleId(roleId);
         }
