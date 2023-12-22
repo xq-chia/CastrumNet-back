@@ -9,12 +9,15 @@ import { LoggerService } from 'src/logger/logger.service';
 import { UserHostService } from 'src/user_host/user_host.service';
 import { UserHost } from 'src/entity/user_host.entity';
 import { Socket, io } from 'socket.io-client';
+import { UsersService } from 'src/users/users.service';
+import { User } from 'src/entity/user.entity';
 
 @WebSocketGateway({ cors: true })
 export class CommandGateway {
   buffer: string = '';
   @WebSocketServer() server: Server;
   userHost: UserHost;
+  user: User;
   ptyProcess: Socket;
   process: string = '';
 
@@ -22,7 +25,8 @@ export class CommandGateway {
     private rbacService: RbacService,
     private hostService: HostService,
     private loggerSrv: LoggerService,
-    private userHostService: UserHostService
+    private userHostService: UserHostService,
+    private userService: UsersService
     ) { }
 
   @SubscribeMessage('init')
@@ -33,6 +37,7 @@ export class CommandGateway {
     this.userHost = await this.userHostService.findOneByUserHostId(userHostId);
     hostId = this.userHost.hostId;
     host = await this.hostService.findOneByHostId(hostId)
+    this.user = await this.userService.findOneById(this.userHost.userId)
 
     this.ptyProcess = io(`ws://${host.ipAddress}:3001`)
     this.ptyProcess.on('message', data => {
@@ -54,7 +59,7 @@ export class CommandGateway {
     // enter
     if (message == '\u000d' && this.buffer && this.process == 'bash') {
       let time = new Date().toLocaleString('en-GB', { timeZone: 'Asia/Kuala_Lumpur', });
-      this.loggerSrv.logWs(`[REQ] ${time} ${this.buffer}`)
+      this.loggerSrv.logWs(`[REQ] ${time} ${this.buffer} ${this.user.username}`)
       if (!await this.rbacService.checkPermission(this.buffer, this.userHost.userHostId)) {
         this.server.emit('error', 'You do not have the permission to execute the command');
         this.clearBuffer();

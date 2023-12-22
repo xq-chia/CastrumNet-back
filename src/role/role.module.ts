@@ -6,10 +6,11 @@ import { RoleInheritanceService } from 'src/role_inheritance/role_inheritance.se
 import { PermissionService } from 'src/permission/permission.service';
 import { LoggerService } from 'src/logger/logger.service';
 import { FileService } from 'src/file/file.service';
+import { UsersService } from 'src/users/users.service';
 
 @Module({
   imports: [DbModule],
-  providers: [RoleService, RoleInheritanceService, PermissionService, LoggerService, FileService],
+  providers: [RoleService, RoleInheritanceService, PermissionService, LoggerService, FileService, UsersService],
   exports: [RoleService],
   controllers: [RoleController],
 })

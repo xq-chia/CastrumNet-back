@@ -1,13 +1,19 @@
 import { CallHandler, ExecutionContext, Inject, Injectable, NestInterceptor, } from '@nestjs/common';
+import { JwtService } from '@nestjs/jwt';
 import { WriteStream, createWriteStream } from 'fs';
 import { Observable, catchError, tap } from 'rxjs';
 import { LoggerService } from 'src/logger/logger.service';
+import { UsersService } from 'src/users/users.service';
 
 @Injectable()
 export class AccountingInterceptor implements NestInterceptor {
-  constructor(private loggerSrv: LoggerService) {}
+  constructor(
+    private loggerSrv: LoggerService,
+    private jwtSrv: JwtService,
+    private userService: UsersService
+    ) {}
 
-  intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
+  async intercept(context: ExecutionContext, next: CallHandler): Promise<Observable<any>> {
     let req: any;
 
     req = context.switchToHttp().getRequest();
@@ -18,9 +24,12 @@ export class AccountingInterceptor implements NestInterceptor {
     let query = JSON.stringify(req.query);
     let body = JSON.stringify(req.body);
     let params = JSON.stringify(req.params);
-    let token = req.get('authorization') ? req.get('authorization').split(' ')[1] : null;
+    let token = req.get('token') ? req.get('token') : null;
+    let clearToken = this.jwtSrv.decode(token);
+    let userId = parseInt(clearToken.sub)
+    let username = (await this.userService.findOneById(userId)).username;
 
-    let line = `[REQ] ${time} ${method} ${url} ${query} ${body} ${params} ${token}`;
+    let line = `[REQ] ${time} ${method} ${url} ${query} ${body} ${params} ${username}`;
 
     this.loggerSrv.logHttp(line)
 
