@@ -40,11 +40,9 @@ export class RoleInheritanceService {
     let sqlResult: any;
 
     sql = 'DELETE FROM role_inheritance WHERE roleId = ?';
-    sqlResult = await this.connection.query(sql, [roleId])
-
-    if (sqlResult.affectedRows >= 1) {
-      return true;
-    } else {
+    try {
+      sqlResult = await this.connection.query(sql, [roleId])
+    } catch {
       throw new HttpException('Deletion failed', HttpStatus.BAD_REQUEST, {
         description: 'roleInheritances are not deleted'
       });

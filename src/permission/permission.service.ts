@@ -59,14 +59,13 @@ export class PermissionService {
     let sqlResult: any;
 
     sql = 'DELETE FROM permission WHERE roleId = ?';
-    sqlResult = await this.connection.query(sql, [roleId])
-
-    if (sqlResult.affectedRows >= 1) {
-      return true;
-    } else {
+    try {
+      sqlResult = await this.connection.query(sql, [roleId])
+    } catch {
       throw new HttpException('Deletion failed', HttpStatus.BAD_REQUEST, {
         description: 'permissions are not deleted'
       });
+
     }
   }
 

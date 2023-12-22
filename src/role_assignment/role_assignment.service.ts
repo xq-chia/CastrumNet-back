@@ -41,11 +41,9 @@ export class RoleAssignmentService {
     let sqlResult: any;
 
     sql = 'DELETE FROM role_assignment WHERE userHostId = ?';
-    sqlResult = await this.connection.query(sql, [userHostId])
-
-    if (sqlResult.affectedRows >= 1) {
-      return true;
-    } else {
+    try {
+      sqlResult = await this.connection.query(sql, [userHostId])
+    } catch {
       throw new HttpException('Deletion failed', HttpStatus.BAD_REQUEST, {
         description: 'role assignments are not deleted'
       });
