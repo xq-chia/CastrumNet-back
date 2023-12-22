@@ -8,17 +8,15 @@ import { Host } from 'src/entity/host.entity';
 import { LoggerService } from 'src/logger/logger.service';
 import { UserHostService } from 'src/user_host/user_host.service';
 import { UserHost } from 'src/entity/user_host.entity';
+import { Socket, io } from 'socket.io-client';
 
 @WebSocketGateway({ cors: true })
 export class CommandGateway implements OnGatewayInit {
-  readonly shell: string = os.platform() === 'win32' ? 'powershell.exe' : 'bash';
-  ptyProcess = pty.spawn(this.shell, [], {
-    name: 'xterm-color',
-    env: process.env
-  })
   buffer: string = '';
   @WebSocketServer() server: Server;
   userHost: UserHost;
+  ptyProcess: Socket = io('ws://localhost:3001');
+  process: string = '';
 
   constructor(
     private rbacService: RbacService,
@@ -28,8 +26,9 @@ export class CommandGateway implements OnGatewayInit {
     ) { }
 
   afterInit(server: Server) {
-    this.ptyProcess.onData(output => {
-      server.send(output)
+    this.ptyProcess.on('message', data => {
+      this.process = data.process
+      server.send(data.output)
     })
   }
 
@@ -42,10 +41,9 @@ export class CommandGateway implements OnGatewayInit {
     hostId = this.userHost.hostId;
     host = await this.hostService.findOneByHostId(hostId)
 
-    this.ptyProcess.write(`ssh zachia-dev@${host.ipAddress}`)
-    this.ptyProcess.write('\u000d')
-    await new Promise(resolve => setTimeout(resolve, 10));
-    this.ptyProcess.write('\u000c')
+    this.ptyProcess = io(`ws://${host.ipAddress}:3001`)
+    // ctrl-l
+    this.ptyProcess.send('\u000c')
   }
 
   @SubscribeMessage('buffer')
@@ -56,7 +54,7 @@ export class CommandGateway implements OnGatewayInit {
   @SubscribeMessage('message')
   async handleMessage(@MessageBody() message: string) {
     // enter
-    if (message == '\u000d' && this.buffer && this.ptyProcess.process == 'bash') {
+    if (message == '\u000d' && this.buffer && this.process == 'bash') {
       let time = new Date().toLocaleString('en-GB', { timeZone: 'Asia/Kuala_Lumpur', });
       this.loggerSrv.logWs(`[REQ] ${time} ${this.buffer}`)
       if (!await this.rbacService.checkPermission(this.buffer, this.userHost.userHostId)) {
@@ -67,10 +65,11 @@ export class CommandGateway implements OnGatewayInit {
       }
       this.loggerSrv.logWs('[RES] ACCEPTED')
     }
-    this.ptyProcess.write(message);
+    this.ptyProcess.send(message)
   }
 
   clearBuffer() {
-    this.ptyProcess.write('\u0015');
+    // ctrl-u
+    this.ptyProcess.send('\u0015');
   }
 }
