@@ -2,6 +2,7 @@ import { HttpException, HttpStatus, Inject, Injectable } from '@nestjs/common';
 import { Connection } from 'mariadb';
 import { Host } from 'src/entity/host.entity';
 import { NodeSSH } from 'node-ssh';
+import { Socket, io } from 'socket.io-client';
 
 @Injectable()
 export class HostService {
@@ -68,20 +69,6 @@ export class HostService {
       throw new HttpException('Host update failed', HttpStatus.BAD_REQUEST, {
         description: 'host is not edited'
       })
-    }
-  }
-
-  async testConn(ipAddress: string) {
-    try {
-      await this.ssh.connect({
-        host: `${ipAddress}`,
-        username: 'zachia-dev',
-        privateKeyPath: '/home/zachia-dev/.ssh/id_rsa'
-      })
-
-      return true;
-    } catch (err) {
-      return false;
     }
   }
 

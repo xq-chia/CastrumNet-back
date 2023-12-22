@@ -52,18 +52,6 @@ export class HostController {
         }
     }
 
-    @Post('testConn')
-    async testConn(@Body() dto: TestConnHostDto) {
-        let isUp: boolean;
-
-        isUp = await this.hostService.testConn(dto.ipAddress);
-
-        return {
-            msg: `SSH connection to ${dto.ipAddress} ${isUp ? 'success' : 'failed' }`,
-            isUp
-        };
-    }
-
     @Patch(':hostId')
     async edit(@Param('hostId') hostId: number, @Body() dto: EditHostDto) {
         let host: Host;
