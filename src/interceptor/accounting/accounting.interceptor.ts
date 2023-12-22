@@ -25,10 +25,12 @@ export class AccountingInterceptor implements NestInterceptor {
     let body = JSON.stringify(req.body);
     let params = JSON.stringify(req.params);
     let token = req.get('token') ? req.get('token') : null;
-    let clearToken = this.jwtSrv.decode(token);
-    let userId = parseInt(clearToken.sub)
-    let username = (await this.userService.findOneById(userId)).username;
-
+    let username = null;
+    if (token) {
+      let clearToken = this.jwtSrv.decode(token);
+      let userId = parseInt(clearToken?.sub)
+      username = (await this.userService.findOneById(userId)).username;
+    }
     let line = `[REQ] ${time} ${method} ${url} ${query} ${body} ${params} ${username}`;
 
     this.loggerSrv.logHttp(line)
