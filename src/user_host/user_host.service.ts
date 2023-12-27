@@ -74,14 +74,14 @@ export class UserHostService {
     let sqlResult: any;
 
     sql = 'DELETE FROM user_host WHERE userId = ?';
-    sqlResult = await this.connection.query(sql, [userId])
-    
-    if (sqlResult.affectedRows >= 1) {
-      return true;
-    } else {
+    try {
+      sqlResult = await this.connection.query(sql, [userId])
+    } catch {
       throw new HttpException('Deletion failed', HttpStatus.BAD_REQUEST, {
         description: 'userHosts are not deleted'
       });
     }
+    
+    return true;
   }
 }
