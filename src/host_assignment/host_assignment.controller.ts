@@ -33,13 +33,26 @@ export class HostAssignmentController {
 
     @Patch('/:userId')
     async edit(@Body() dto: EditHostAssignmentDto, @Param('userId') userId: number) {
-        for (const userHost of dto.userHosts) {
-            await this.roleAssignmentService.deleteAllByUserHostId(userHost.userHostId);
+        let userHosts: UserHost[] = [];
+        let hostIds: number[] = [];
+        let toAdd: number[] = [];
+        let toDelete: UserHost[] = [];
+
+        userHosts = await this.userHostService.findAllByUserId(userId)
+        hostIds = userHosts.map(userHost => userHost.hostId);
+        toAdd = dto.hostIds.filter(hostId => hostIds.indexOf(hostId) < 0)
+        toDelete = userHosts.filter(userHost => dto.hostIds.indexOf(userHost.hostId) < 0)
+
+        for (const hostId of toAdd) {
+            let userHost: UserHost;
+            userHost = new UserHost(userId, hostId);
+            this.userHostService.save(userHost);
         }
-        await this.userHostService.deleteAllByUserId(userId);
-        for (const hostId of dto.hostIds) {
-            this.userHostService.save(new UserHost(userId, hostId))
+
+        for (const userHost of toDelete) {
+            this.userHostService.delete(userHost);
         }
+
         return {
             msg: `Successfully edited host for user ${userId}`
         }
