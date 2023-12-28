@@ -10,7 +10,7 @@ export class RoleInheritanceService {
     let sql: string;
     let sqlResult: any;
 
-    sql = 'INSERT INTO role_inheritance VALUES (?, ?)';
+    sql = 'INSERT INTO role_inheritance (roleId, parentId) VALUES (?, ?)';
     sqlResult = await this.connection.query(sql, [role.roleId, role.parentId])
 
     return sqlResult.insertId;
@@ -27,7 +27,7 @@ export class RoleInheritanceService {
     for (let row of sqlResult) {
         let inheritance: RoleInheritance;
 
-        inheritance = new RoleInheritance(row.roleId, row.parentId);
+        inheritance = new RoleInheritance(row.roleId, row.parentId, row.inheritanceId);
 
         inheritances.push(inheritance)
     }
@@ -53,6 +53,36 @@ export class RoleInheritanceService {
     await this.deleteAllByRoleId(roleId);
     for (const role of roles) {
       this.save(role)
+    }
+  }
+
+  async update(roleInheritance: RoleInheritance) {
+    let sql: string;
+    let sqlResult: any;
+
+    sql = 'UPDATE role_inheritance SET roleId = ?, parentId = ? WHERE inheritanceId = ?';
+    sqlResult = await this.connection.query(sql, [roleInheritance.roleId, roleInheritance.parentId, roleInheritance.inheritanceId]);
+
+    if (sqlResult.affectedRows == 1) {
+      return true;
+    } else {
+      throw new HttpException('Role Inheritance update failed', HttpStatus.BAD_REQUEST , {
+        description: 'role inheritance is not edited'
+      })
+    }
+  }
+
+  async delete(roleInheritance: RoleInheritance) {
+    let sql: string;
+    let sqlResult: any;
+
+    sql = 'DELETE FROM role_inheritance WHERE inheritanceId = ?';
+    try {
+      sqlResult = await this.connection.query(sql, [roleInheritance.inheritanceId])
+    } catch {
+      throw new HttpException('Deletion failed', HttpStatus.BAD_REQUEST, {
+        description: 'roleInheritance is not deleted'
+      });
     }
   }
 }
