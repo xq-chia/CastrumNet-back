@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, HttpException, HttpStatus, Param, Patch, Post, UnauthorizedException, UseFilters, UseInterceptors } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpException, HttpStatus, Param, Patch, Post, Req, UnauthorizedException, UseFilters, UseInterceptors } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateDto } from 'src/dto/create-users.dto';
 import { User } from 'src/entity/user.entity';
@@ -51,7 +51,11 @@ export class UsersController {
   }
 
   @Get(':userId')
-  async fetch(@Param('userId') userId: number) {
+  async fetch(@Param('userId') userId: any) {
+    if (userId == 'check') {
+      return ;
+    }
+
     let user: User;
     let tenant: Tenant;
     let userHosts: UserHost[] = [];
