@@ -41,13 +41,13 @@ export class AuthService {
       );
     }
 
-    // frozen account
+    // deactivated account
     if (!user.status) {
       throw new HttpException(
-        'This account has been frozen',
+        'This account has been deactivated',
         HttpStatus.UNAUTHORIZED,
         {
-          description: 'frozen account',
+          description: 'deactivated account',
         },
       );
     }
@@ -81,7 +81,7 @@ export class AuthService {
       this.usersService.update(user);
       this.usersService.toggleStatus(user.userId);
       throw new HttpException(
-        'Too many login attempts. Account frozen',
+        'Too many login attempts. Account deactivated',
         HttpStatus.UNAUTHORIZED,
         {
           description: 'brute force detected',
