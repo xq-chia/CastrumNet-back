@@ -111,27 +111,40 @@ export class RoleController {
     @Patch(':roleId')
     async edit(@Param('roleId') roleId: number, @Body() dto: EditRoleDto) {
         let role: Role;
-        let parents: RoleInheritance[] = [];
-        let permissions: Permission[] = [];
+        let roleInheritances: RoleInheritance[] = [];
+        let _roleInheritances: any[] = [];
+        let parentIds: number[] = [];
+        let toAdd: number[];
+        let toDelete: any[];
         let files: File[] = [];
 
         role = new Role(dto.role, dto.description, dto.roleId)
-
         this.roleService.update(role);
 
-        if(dto.parentIds) {
-            for (const parentId of dto.parentIds) {
-                parents.push(new RoleInheritance(roleId, parentId));
-            }
-            await this.roleInheritanceService.updateAllByRoleId(roleId, parents);
-        } else {
-            await this.roleInheritanceService.deleteAllByRoleId(roleId);
+        roleInheritances = await this.roleInheritanceService.findByRoleId(dto.roleId)
+        parentIds = roleInheritances.map(roleInheritance => roleInheritance.parentId)
+        _roleInheritances = roleInheritances.map(role => ({ inheritanceId: role.inheritanceId, parentId: role.parentId }));
+
+        toAdd = dto.parentIds.filter(parentId => parentIds.indexOf(parentId) < 0)
+        toDelete = _roleInheritances.filter(roleInheritance => dto.parentIds.indexOf(roleInheritance.parentId) < 0)
+
+        for (const parentId of toAdd) {
+            let roleInheritance: RoleInheritance;
+            roleInheritance = new RoleInheritance(roleId, parentId)
+            this.roleInheritanceService.save(roleInheritance)
+        }
+
+        for (const inheritance of toDelete) {
+            this.roleInheritanceService.delete(inheritance)
         }
 
         for (const permission of dto.permissions) {
-            permissions.push(new Permission(permission.object, !!permission.allow, dto.roleId));
+            if (permission.permId) {
+                this.permissionService.update(permission)
+            } else {
+                this.permissionService.save(permission)
+            }
         }
-        this.permissionService.updateAllByRoleId(roleId, permissions)
 
         if (dto.files.length) {
             for (const file of dto.files) {
