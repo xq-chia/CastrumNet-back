@@ -3,7 +3,6 @@ import { EditRoleAssignmentDto } from 'src/dto/edit-roleAssignment.dto';
 import { RoleAssignmentService } from './role_assignment.service';
 import { RoleAssignment } from 'src/entity/role_assignment.entity';
 import { UsersService } from 'src/users/users.service';
-import { User } from 'src/entity/user.entity';
 import { TransformInterceptor } from 'src/interceptor/transform/transform.interceptor';
 import { UserHostService } from 'src/user_host/user_host.service';
 import { UserHost } from 'src/entity/user_host.entity';
@@ -11,7 +10,6 @@ import { Host } from 'src/entity/host.entity';
 import { HostService } from 'src/host/host.service';
 import { AccountingInterceptor } from 'src/interceptor/accounting/accounting.interceptor';
 import { GenericExceptionFilter } from 'src/filter/generic-exception/generic-exception.filter';
-import { privateDecrypt } from 'crypto';
 import { RoleService } from 'src/role/role.service';
 import { Role } from 'src/entity/role.entity';
 
@@ -21,7 +19,6 @@ import { Role } from 'src/entity/role.entity';
 export class RoleAssignmentController {
   constructor(
       private roleAssignmentService: RoleAssignmentService,
-      private userService: UsersService,
       private userHostService: UserHostService,
       private hostService: HostService,
       private roleSrv: RoleService
@@ -63,10 +60,28 @@ export class RoleAssignmentController {
   @Patch()
   async edit(@Body() dto: EditRoleAssignmentDto) {
       for (const roleAssignment of dto.roleAssignments) {
-          await this.roleAssignmentService.deleteAllByUserHostId(roleAssignment.userHostId)
-          for (const roleId of roleAssignment.roleIds) {
-              this.roleAssignmentService.save(new RoleAssignment(roleAssignment.userHostId, roleId));
-          }
+        let toAdd: number[] = [];
+        let toDelete: RoleAssignment[] = [];
+        let roleAssignments: RoleAssignment[] = [];
+        let _roleIds: number[] = [];
+        let roleIds: number[] = [];
+
+        roleAssignments = await this.roleAssignmentService.findAllByUserHostId(roleAssignment.userHostId)
+        roleIds = roleAssignment.roleIds
+        _roleIds = roleAssignments.map(roleAssignment => roleAssignment.roleId)
+
+        toAdd = roleIds.filter(roleId => !_roleIds.includes(roleId))
+        toDelete = roleAssignments.filter(_roleAssignment => !roleIds.includes(_roleAssignment.roleId))
+
+        for (const roleId of toAdd) {
+          let _roleAssignment: RoleAssignment;
+          _roleAssignment = new RoleAssignment(roleAssignment.userHostId, roleId);
+          await this.roleAssignmentService.save(_roleAssignment);
+        }
+
+        for (const roleAssignment of toDelete) {
+          this.roleAssignmentService.delete(roleAssignment)
+        }
       }
     return {
       msg: `Successfully edited role for user ${dto.userId}`
