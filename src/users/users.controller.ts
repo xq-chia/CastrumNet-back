@@ -86,8 +86,10 @@ export class UsersController {
     );
 
     userId = await this.usersService.save(user);
-    for (const hostId of createDto.hostIds) {
-      this.userHostService.save(new UserHost(userId, hostId));
+    if (createDto.hostIds) {
+      for (const hostId of createDto.hostIds) {
+        this.userHostService.save(new UserHost(userId, hostId));
+      }
     }
     
     return {
