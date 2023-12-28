@@ -27,7 +27,11 @@ export class HostController {
     }
 
     @Get(':hostId')
-    async fetch(@Param('hostId') hostId: number) {
+    async fetch(@Param('hostId') hostId: any) {
+        if (hostId == 'check') {
+        return ;
+        }
+
         let host: Host;
 
         host = await this.hostService.findOneByHostId(hostId)
@@ -37,6 +41,18 @@ export class HostController {
             host
         }
     }
+
+  @Get('/check/:ip')
+  async checkHost(@Param('ip') ip: string) {
+    let hosts: Host[];
+    let ips: string[];
+
+    hosts = await this.hostService.findAll();
+    ips = hosts.map(host => host.ipAddress);
+
+    return ips.includes(ip);
+  }
+
 
     @Post()
     async save(@Body() dto: CreateHostDto) {
