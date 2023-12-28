@@ -49,4 +49,18 @@ export class RoleAssignmentService {
       });
     }
   }
+
+  async delete(roleAssignment: RoleAssignment) {
+    let sql: string;
+    let sqlResult: any;
+
+    sql = 'DELETE FROM role_assignment WHERE userHostId = ? AND roleId = ?';
+    try {
+      sqlResult = await this.connection.query(sql, [roleAssignment.userHostId, roleAssignment.roleId])
+    } catch {
+      throw new HttpException('Deletion failed', HttpStatus.BAD_REQUEST, {
+        description: 'role assignment is not deleted'
+      });
+    }
+  }
 }
