@@ -27,6 +27,17 @@ export class UsersController {
     private roleAssignmentService: RoleAssignmentService
   ) {}
 
+  @Get('/check/:username')
+  async checkUsername(@Param('username') username: string) {
+    let users: User[];
+    let usernames: string[];
+
+    users = await this.usersService.findAll();
+    usernames = users.map(user => user.username);
+
+    return usernames.includes(username);
+  }
+
   @Get()
   async fetchAll(): Promise<any> {
     let users: User[];
