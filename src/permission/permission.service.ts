@@ -69,6 +69,23 @@ export class PermissionService {
     }
   }
 
+  async update(permission: Permission) {
+    let sql: string;
+    let sqlResult: any;
+
+    sql = 'UPDATE permission SET object = ?, allow = ?, roleId = ? WHERE permId = ?';
+    sqlResult = await this.connection.query(sql, [permission.object, permission.allow, permission.roleId, permission.permId]);
+
+    if (sqlResult.affectedRows == 1) {
+      return true;
+    } else {
+      throw new HttpException('Permission update failed', HttpStatus.BAD_REQUEST , {
+        description: 'permission is not edited'
+      })
+    }
+
+  }
+
   async updateAllByRoleId(roleId: number, permissions: Permission[]) {
     await this.deleteAllByRoleId(roleId);
     for (const permission of permissions) {
