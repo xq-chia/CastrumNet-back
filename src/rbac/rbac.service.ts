@@ -105,16 +105,9 @@ export class RbacService {
 
     _commands = commandPermissions.map(permission => permission.object)
     implicitDeny = commands.filter(command => _commands.indexOf(command) < 0)
-    console.log(`commandPermission is ${JSON.stringify(commandPermissions)}`)
-    console.log(`_command is ${_commands}`)
-    console.log(`implicitDeny is ${implicitDeny}`)
     if (implicitDeny.length) {
       return false;
     }
-    // // implicit deny
-    // if (commandPermissions.length == 0) {
-    //   return false;
-    // }
 
     // deny rule precedes allow rule
     for (let permission of commandPermissions) {
