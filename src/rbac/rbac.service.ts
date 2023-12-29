@@ -65,7 +65,7 @@ export class RbacService {
   }
 
   async checkPermission(buffer: string, userHostId: number) {
-    let comamnds: string[] = [];
+    let commands: string[] = [];
     let bufferList: string[] = [];
     let args: string[] = [];
     let roleAssignments: RoleAssignment[] = []
@@ -73,15 +73,17 @@ export class RbacService {
     let userHostPermissions: Permission[] = []
     let commandPermissions: Permission[] = []
     let blockedFiles: File[] = []
+    let implicitDeny: any[] = [];
+    let _commands: string[] = [];
 
     try {
-      comamnds = this.extractCommand(buffer);
+      commands = this.extractCommand(buffer);
     } catch (err) {
       return false;
     }
 
     args = this.extractArgs(buffer);
-    args = args.filter(arg => !comamnds.includes(arg));
+    args = args.filter(arg => !commands.includes(arg));
 
     roleAssignments = await this.roleAssignmentSrv.findAllByUserHostId(userHostId)
     roleIds = roleAssignments.map(roleAssignments => roleAssignments.roleId)
@@ -97,14 +99,22 @@ export class RbacService {
       }
     }
 
-    for (const command of comamnds) {
-      commandPermissions = userHostPermissions.filter(permission => permission.object == command)
+    for (const command of commands) {
+      commandPermissions = commandPermissions.concat(userHostPermissions.filter(permission => permission.object == command))
     }
 
-    // implicit deny
-    if (commandPermissions.length == 0) {
+    _commands = commandPermissions.map(permission => permission.object)
+    implicitDeny = commands.filter(command => _commands.indexOf(command) < 0)
+    console.log(`commandPermission is ${JSON.stringify(commandPermissions)}`)
+    console.log(`_command is ${_commands}`)
+    console.log(`implicitDeny is ${implicitDeny}`)
+    if (implicitDeny.length) {
       return false;
     }
+    // // implicit deny
+    // if (commandPermissions.length == 0) {
+    //   return false;
+    // }
 
     // deny rule precedes allow rule
     for (let permission of commandPermissions) {
