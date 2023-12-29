@@ -78,6 +78,8 @@ export class RbacService {
 
     try {
       commands = this.extractCommand(buffer);
+      commands = commands.concat(this.extractCommandInterpolation(buffer));
+      commands = commands.concat(this.extractBackticks(buffer));
     } catch (err) {
       return false;
     }
@@ -135,6 +137,30 @@ export class RbacService {
     }
 
     return args
+  }
+
+  extractCommandInterpolation(buffer: string): string[] {
+    let regex = /\$\((.*?)\)/g;
+    let matches: string[] = [];
+    let match: RegExpExecArray | null;
+  
+    while ((match = regex.exec(buffer)) !== null) {
+      matches.push(match[1]);
+    }
+  
+    return matches;
+  }
+
+  extractBackticks(buffer: string): string[] {
+    const regex = /`([^`]+)`/g;
+    const matches: string[] = [];
+    let match: RegExpExecArray | null;
+  
+    while ((match = regex.exec(buffer)) !== null) {
+      matches.push(match[1]);
+    }
+  
+    return matches;
   }
 
   extractCommand(buffer: string): string[] {

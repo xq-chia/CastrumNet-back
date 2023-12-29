@@ -31,7 +31,6 @@ export class CommandGateway {
 
   @SubscribeMessage('init')
   async handleInit(@MessageBody() userHostId: number) {
-    console.log('init')
     let host: Host;
     let hostId: number;
 
