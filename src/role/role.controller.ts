@@ -117,6 +117,7 @@ export class RoleController {
         let toAdd: number[];
         let toDelete: any[];
         let files: File[] = [];
+        let permissions: Permission[] = []
 
         role = new Role(dto.role, dto.description, dto.roleId)
         this.roleService.update(role);
@@ -139,12 +140,9 @@ export class RoleController {
         }
 
         for (const permission of dto.permissions) {
-            if (permission.permId) {
-                this.permissionService.update(permission)
-            } else {
-                this.permissionService.save(permission)
-            }
+            permissions.push(new Permission(permission.object, !!permission.allow, dto.roleId));
         }
+        this.permissionService.updateAllByRoleId(roleId, permissions)
 
         if (dto.files.length) {
             for (const file of dto.files) {
