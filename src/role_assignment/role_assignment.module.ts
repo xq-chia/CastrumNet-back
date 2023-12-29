@@ -7,10 +7,11 @@ import { UserHostService } from 'src/user_host/user_host.service';
 import { HostService } from 'src/host/host.service';
 import { LoggerService } from 'src/logger/logger.service';
 import { RoleService } from 'src/role/role.service';
+import { RoleInheritanceService } from 'src/role_inheritance/role_inheritance.service';
 
 @Module({
   imports: [DbModule],
-  providers: [RoleAssignmentService, UsersService, UserHostService, HostService, LoggerService, RoleService],
+  providers: [RoleAssignmentService, UsersService, UserHostService, HostService, LoggerService, RoleService, RoleInheritanceService],
   exports: [RoleAssignmentService],
   controllers: [RoleAssignmentController]
 })

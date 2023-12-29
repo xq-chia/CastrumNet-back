@@ -1,10 +1,15 @@
 import { HttpException, HttpStatus, Inject, Injectable } from '@nestjs/common';
 import { Connection } from 'mariadb';
 import { Role } from 'src/entity/role.entity';
+import { RoleInheritance } from 'src/entity/role_inheritance.entity';
+import { RoleInheritanceService } from 'src/role_inheritance/role_inheritance.service';
 
 @Injectable()
 export class RoleService {
-    constructor(@Inject('DATABASE_CONNECTION') private connection: Connection) {}
+    constructor(
+      @Inject('DATABASE_CONNECTION') private connection: Connection,
+      private roleInheritanceService: RoleInheritanceService
+    ) {}
 
   async save(role: Role): Promise<number> {
     let sql: string;
@@ -14,6 +19,26 @@ export class RoleService {
     sqlResult = await this.connection.query(sql, [role.role, role.description])
 
     return sqlResult.insertId;
+  }
+
+  async findAllChildByRoleId(roleId: number) {
+    let sql: string;
+    let sqlResult: any;
+    let childRoles: Role[] = []
+
+    let childRoleInheritances: RoleInheritance[];
+    childRoleInheritances = await this.roleInheritanceService.findByParentId(roleId);
+    for (const childRoleInheritance of childRoleInheritances) {
+      let childRole: Role;
+
+      childRole = await this.findOneByRoleId(childRoleInheritance.roleId);
+      childRoles.push(childRole);
+
+      let grandchildRoles = await this.findAllChildByRoleId(childRole.roleId);
+      childRoles.push(...grandchildRoles)
+    }
+
+    return childRoles;
   }
 
   async update(role: Role) {

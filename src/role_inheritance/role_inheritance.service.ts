@@ -35,6 +35,25 @@ export class RoleInheritanceService {
     return inheritances;
   }
 
+  async findByParentId(id: number): Promise<RoleInheritance[] | undefined> {
+    let sql: string;
+    let inheritances: RoleInheritance[] = [];
+    let sqlResult: any[];
+
+    sql = 'SELECT * FROM role_inheritance WHERE parentId = ?';
+
+    sqlResult = (await this.connection.query(sql, [id]));
+    for (let row of sqlResult) {
+        let inheritance: RoleInheritance;
+
+        inheritance = new RoleInheritance(row.roleId, row.parentId, row.inheritanceId);
+
+        inheritances.push(inheritance)
+    }
+
+    return inheritances;
+  }
+
   async deleteAllByRoleId(roleId: number) {
     let sql: string;
     let sqlResult: any;

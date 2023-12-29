@@ -42,12 +42,14 @@ export class RoleController {
         let roleInheritances: RoleInheritance[];
         let permissions: Permission[];
         let parentRoles: Role[] = [];
+        let childRoles: Role[] = [];
         let files: File[] = [];
 
         role = await this.roleService.findOneByRoleId(roleId);
         roleInheritances = await this.roleInheritanceService.findByRoleId(roleId);
         permissions = await this.permissionService.findAllByRoleId(roleId);
         files = await this.fileService.findAllByRoleId(roleId);
+        childRoles = await this.roleService.findAllChildByRoleId(roleId);
 
         for (const roleInheritance of roleInheritances) {
             parentRoles.push(await this.roleService.findOneByRoleId(roleInheritance.parentId))
@@ -59,6 +61,7 @@ export class RoleController {
             role: role.role,
             description: role.description,
             parentRoles,
+            childRoles,
             permissions,
             files
         }
