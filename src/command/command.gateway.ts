@@ -31,6 +31,7 @@ export class CommandGateway {
 
   @SubscribeMessage('init')
   async handleInit(@MessageBody() userHostId: number) {
+    console.log('init')
     let host: Host;
     let hostId: number;
 
@@ -52,6 +53,11 @@ export class CommandGateway {
   @SubscribeMessage('buffer')
   handleBuffer(@MessageBody() buffer: string) {
     this.buffer = buffer.trim();
+  }
+
+  @SubscribeMessage('term')
+  handleTerm() {
+    this.ptyProcess.off("message")
   }
 
   @SubscribeMessage('message')
