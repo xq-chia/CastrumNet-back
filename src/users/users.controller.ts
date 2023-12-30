@@ -14,6 +14,8 @@ import { RoleAssignmentService } from 'src/role_assignment/role_assignment.servi
 import { TransformInterceptor } from 'src/interceptor/transform/transform.interceptor';
 import { AccountingInterceptor } from 'src/interceptor/accounting/accounting.interceptor';
 import { GenericExceptionFilter } from 'src/filter/generic-exception/generic-exception.filter';
+import { bcryptConstants } from "../constants/bcrypt.constant";
+import { hash } from "bcrypt";
 
 @UseInterceptors(AccountingInterceptor, TransformInterceptor)
 @UseFilters(GenericExceptionFilter)
@@ -92,7 +94,7 @@ export class UsersController {
 
     user = new User(
       createDto.username,
-      createDto.password,
+      await hash(createDto.password, bcryptConstants.round),
       createDto.firstName,
       createDto.lastName,
       true,
@@ -118,7 +120,15 @@ export class UsersController {
 
     dto.status = dto.status ?? false;
 
-    user = new User(dto.username, dto.password, dto.firstName, dto.lastName, dto.status, dto.tenantId, userId)
+    user = new User(
+      dto.username, 
+      await hash(dto.password, bcryptConstants.round),
+      dto.firstName, 
+      dto.lastName, 
+      dto.status, 
+      dto.tenantId, 
+      userId
+    )
 
     this.usersService.update(user);
 

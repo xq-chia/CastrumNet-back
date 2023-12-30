@@ -4,7 +4,7 @@ import { UsersService } from './../users/users.service';
 import { TenantsService } from "../tenants/tenants.service";
 import { User } from 'src/entity/user.entity';
 import { Tenant } from 'src/entity/tenant.entity';
-import { json } from 'stream/consumers';
+import { compare } from 'bcrypt';
 
 @Injectable()
 export class AuthService {
@@ -53,7 +53,7 @@ export class AuthService {
     }
 
     // authenticated
-    if (user.username == username && user.password == password) {
+    if (user.username == username && await compare(password, user.password.toString())) {
       // reset login attempt
       user.loginAttempt = 0;
       this.usersService.update(user);
