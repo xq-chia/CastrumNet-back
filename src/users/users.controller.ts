@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, HttpException, HttpStatus, Param, Patch, Post, Req, UnauthorizedException, UseFilters, UseInterceptors } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpException, HttpStatus, Param, Patch, Post, Query, Req, UnauthorizedException, UseFilters, UseInterceptors } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateDto } from 'src/dto/create-users.dto';
 import { User } from 'src/entity/user.entity';
@@ -41,10 +41,18 @@ export class UsersController {
   }
 
   @Get()
-  async fetchAll(): Promise<any> {
+  async fetchAll(@Query('q') keyword: string): Promise<any> {
     let users: User[];
 
     users = await this.usersService.findAll();
+    
+    if (keyword) {
+      users = users.filter(user => 
+        user.username.includes(keyword) || 
+        user.firstName.includes(keyword) || 
+        user.firstName.includes(keyword)
+      )
+    }
 
     return { 
       msg: 'Successfully fetched all users',
