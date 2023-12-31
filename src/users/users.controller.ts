@@ -41,7 +41,7 @@ export class UsersController {
   }
 
   @Get()
-  async fetchAll(@Query('q') keyword: string): Promise<any> {
+  async fetchAll(@Query('q') keyword: string, @Query('sod') sod: number): Promise<any> {
     let users: User[];
 
     users = await this.usersService.findAll();
@@ -52,6 +52,10 @@ export class UsersController {
         user.firstName.includes(keyword) || 
         user.firstName.includes(keyword)
       )
+    }
+
+    if (sod) {
+      users = users.filter(user => user.userId != sod)
     }
 
     return { 
