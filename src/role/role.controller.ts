@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post, UseFilters, UseInterceptors } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post, Query, UseFilters, UseInterceptors } from '@nestjs/common';
 import { RoleService } from './role.service';
 import { Role } from 'src/entity/role.entity';
 import { CreateRoleDto } from 'src/dto/create-role.dto';
@@ -25,10 +25,17 @@ export class RoleController {
     ) {}
 
     @Get()
-    async fetchAll(): Promise<any> {
+    async fetchAll(@Query('q') keyword: string): Promise<any> {
         let roles: Role[];
 
         roles = await this.roleService.findAll();
+        
+        if (keyword) {
+            roles = roles.filter(role => 
+                role.role.includes(keyword) ||
+                role.description.includes(keyword)
+            )
+        }
 
         return {
             msg: 'Successfully fetched all roles',
