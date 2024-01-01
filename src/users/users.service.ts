@@ -16,9 +16,14 @@ export class UsersService {
       user.loginAttempt = 0
     }
 
-    sql = 'UPDATE user SET username = ?, password = ?, firstName = ?, lastName = ?, tenantId = ?, status = ?, loginAttempt = ? WHERE userId = ?';
-    sqlResult = await this.connection.query(sql, [user.username, user.password, user.firstName, user.lastName, user.tenantId, user.status, user.loginAttempt, user.userId]);
-
+    if (user.password.type) {
+      sql = 'UPDATE user SET username = ?, firstName = ?, lastName = ?, tenantId = ?, status = ?, loginAttempt = ? WHERE userId = ?';
+      sqlResult = await this.connection.query(sql, [user.username, user.firstName, user.lastName, user.tenantId, user.status, user.loginAttempt, user.userId]);
+    } else {
+      sql = 'UPDATE user SET username = ?, password = ?, firstName = ?, lastName = ?, tenantId = ?, status = ?, loginAttempt = ? WHERE userId = ?';
+      sqlResult = await this.connection.query(sql, [user.username, user.password, user.firstName, user.lastName, user.tenantId, user.status, user.loginAttempt, user.userId]);
+    }
+    
     if (sqlResult.affectedRows == 1) {
       return true;
     } else {

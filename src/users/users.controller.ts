@@ -17,8 +17,9 @@ import { GenericExceptionFilter } from 'src/filter/generic-exception/generic-exc
 import { bcryptConstants } from "../constants/bcrypt.constant";
 import { hash } from "bcrypt";
 
-@UseInterceptors(AccountingInterceptor, TransformInterceptor)
-@UseFilters(GenericExceptionFilter)
+@UseInterceptors(TransformInterceptor)
+// @UseInterceptors(AccountingInterceptor, TransformInterceptor)
+// @UseFilters(GenericExceptionFilter)
 @Controller('users')
 export class UsersController {
   constructor(
@@ -134,7 +135,7 @@ export class UsersController {
 
     user = new User(
       dto.username, 
-      await hash(dto.password, bcryptConstants.round),
+      dto.password.type ? dto.password : await hash(dto.password, bcryptConstants.round),
       dto.firstName, 
       dto.lastName, 
       dto.status, 
