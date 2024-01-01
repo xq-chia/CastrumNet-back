@@ -54,7 +54,7 @@ export class HostAssignmentController {
         }
 
         return {
-            msg: `Successfully edited host for user ${userId}`
+            msg: `Successfully edited host assignment for user ${userId}`
         }
     }
 }
