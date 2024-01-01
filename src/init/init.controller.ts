@@ -83,6 +83,11 @@ export class InitController {
                 link: '/workstation/list'
               }
             ]
+          },
+          {
+            text: 'Account Details',
+            link: '/profile/details',
+            hide: true
           }
         ]
       } else {
