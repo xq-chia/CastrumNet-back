@@ -4,7 +4,7 @@ import { createPool } from 'mariadb';
 const pool = createPool({
   host: '127.0.0.1',
   user: 'fyp',
-  password: 'xq010614chia',
+  password: '**********',
   database: 'fyp',
 });
 
